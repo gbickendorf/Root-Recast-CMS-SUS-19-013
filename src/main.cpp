@@ -133,7 +133,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
   TClonesArray *branchAK8Jet = treeReader->UseBranch("AK8Jets");
   TClonesArray *branchMET = treeReader->UseBranch("MissingET");
-  TClonesArray *branchWeight = treeReader->UseBranch("LHEFEvent");
+  //TClonesArray *branchWeight = treeReader->UseBranch("LHEFEvent");
   TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
 
   Long64_t allEntries = treeReader->GetEntries();
@@ -180,6 +180,8 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   //allEntries=1000;
   for(entry = 0; entry < allEntries; ++entry)
   {
+    if(entry % 1000 == 0)
+      printf("%lld\n",entry);
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
     ScalarHT *scHT= (ScalarHT*)branchHT->At(0);
@@ -423,10 +425,14 @@ int main()
     // Create chain of root trees
   TChain chain("Delphes");
   std::ifstream file("ROOTFILES.txt");
+  int i = 3;
   if (file.is_open()) {
     std::string line;
     while (std::getline(file, line)) {
       chain.Add(line.c_str());
+      i--;
+      if(i == 0)
+        break;
     }
     file.close();
   }
