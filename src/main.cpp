@@ -8,7 +8,7 @@
 #include "TClonesArray.h"
 #include "TSystemDirectory.h"
 #include "classes/DelphesClasses.h"
-#include "fastjet/ClusterSequence.hh"
+//#include "fastjet/ClusterSequence.hh"
 #include "ExRootAnalysis/ExRootClasses.h"
 
 #include "ExRootAnalysis/ExRootTreeReader.h"
@@ -19,7 +19,7 @@
 using namespace std;
 void exampleMacro()
 {
-  vector<fastjet::PseudoJet> input_particles;
+ // vector<fastjet::PseudoJet> input_particles;
   TCanvas *c1 = new TCanvas("c1", "c1");
   c1->cd();
   // Create chain of root trees
@@ -122,6 +122,8 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   TCanvas *c1 = new TCanvas("c1", "c1");
   c1->cd();
   TH1 *histHT = new TH1F("HT", "HT", 100, 0.0, 1000.0);
+  const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
+  TH1 *histMet = new TH1F("ptmiss", "ptmiss", 6, bins);
   TClonesArray *branchParticle = treeReader->UseBranch("Particle");
   TClonesArray *branchElectron = treeReader->UseBranch("Electron");
   TClonesArray *branchPhoton = treeReader->UseBranch("Photon");
@@ -137,7 +139,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
 
   Long64_t allEntries = treeReader->GetEntries();
-
+  //allEntries=10000;
   cout << "** Chain contains " << allEntries << " events" << endl;
 
   GenParticle *particle;
@@ -166,7 +168,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   ToggleCut[2]=1; //PT_miss > 300GeV
   ToggleCut[3]=1; //HT > 400 GeV
   ToggleCut[4]=1; //Phi(j,HTMiss)>0.5(0.3)
-  ToggleCut[5]=1; //~isolated Photon, Electron, Muon PT > 10 GeV
+  ToggleCut[5]=0; //~isolated Photon, Electron, Muon PT > 10 GeV
   ToggleCut[6]=1; //isolated Tracks mt> 100GeV, pt > 10GeV
   ToggleCut[7]=1; //2 AK8 Jets PT > 200 GeV
   ToggleCut[8]=1; //mJet of 2 AK8 Jets in [10,140]GeV
@@ -409,10 +411,13 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
         continue;
     }
     survived++;
+    histMet->Fill(MET);
   }
   printf("\n\nTotal %lld\nSurvived %lld\nEfficiency %f\n",allEntries,survived,((float)survived)/allEntries);
   histHT->Draw();
   c1->SaveAs("HT.eps");
+  histMet->Draw();
+  c1->SaveAs("MET.eps");
   for(int i = 0; i < 10; i++)
   {
     printf("%d %d %d\n",i,ToggleCut[i],NCut[i]);

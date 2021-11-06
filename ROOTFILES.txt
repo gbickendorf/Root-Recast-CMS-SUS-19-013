@@ -1,4 +1,3 @@
-/media/gerrit/Files/DelphesEvents/DelphesTestRun/CorrectIsolation.root
 /media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun9.root
 /media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun10.root
 /media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun1.root
