@@ -1,5 +1,6 @@
 #include <TROOT.h>
 #include <iostream>
+#include <fstream>
 #include <TCanvas.h>
 #include <TChain.h>
 #include <TH1.h>
@@ -418,30 +419,17 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 
 int main()
 {  
-  const char *dirname="/media/gerrit/Files/DelphesEvents";
-  const char *ext=".root";
-    TSystemDirectory dir(dirname, dirname);
-   TList *files = dir.GetListOfFiles();
-   if (files) {
-      TSystemFile *file;
-      TString fname;
-      TIter next(files);
-      while ((file=(TSystemFile*)next())) {
-         fname = file->GetName();
-         if (!file->IsDirectory() && fname.EndsWith(ext)) {
-            cout << fname.Data() << endl;
-         }
-      }
-   }
-   return 0;
+
     // Create chain of root trees
   TChain chain("Delphes");
-  //chain.Add("/home/gerrit/Desktop/tmp/root/Z234JRun8.root");
-  //chain.Add("/home/gerrit/Desktop/tmp/root/Z234JRun9.root");
-  chain.Add("/media/gerrit/Files/DelphesEvents/DelphesTestRun/CorrectIsolation.root");
-  //chain.Add("/media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun10.root");
-
-  // Create object of class ExRootTreeReader
+  std::ifstream file("ROOTFILES.txt");
+  if (file.is_open()) {
+    std::string line;
+    while (std::getline(file, line)) {
+      chain.Add(line.c_str());
+    }
+    file.close();
+  }
   ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
   TestPlots *plots = new TestPlots;
   AnalyseEvents(treeReader,plots);

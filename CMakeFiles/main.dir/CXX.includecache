@@ -17,10 +17,16 @@ TChain.h
 -
 TH1.h
 -
+TVector3.h
+-
 TClonesArray.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/TClonesArray.h
+TSystemDirectory.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/TSystemDirectory.h
 classes/DelphesClasses.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/classes/DelphesClasses.h
+fastjet/ClusterSequence.hh
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/fastjet/ClusterSequence.hh
 ExRootAnalysis/ExRootClasses.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootClasses.h
 ExRootAnalysis/ExRootTreeReader.h
