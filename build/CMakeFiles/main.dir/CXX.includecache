@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/main.cpp
+TROOT.h
+-
+iostream
+-
+TCanvas.h
+-
+TChain.h
+-
+TH1.h
+-
+TVector3.h
+-
+TClonesArray.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/TClonesArray.h
+TSystemDirectory.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/TSystemDirectory.h
+classes/DelphesClasses.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/classes/DelphesClasses.h
+fastjet/ClusterSequence.hh
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/fastjet/ClusterSequence.hh
+ExRootAnalysis/ExRootClasses.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootClasses.h
+ExRootAnalysis/ExRootTreeReader.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootTreeReader.h
+ExRootAnalysis/ExRootTreeWriter.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootTreeWriter.h
+ExRootAnalysis/ExRootTreeBranch.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootTreeBranch.h
+ExRootAnalysis/ExRootResult.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootResult.h
+ExRootAnalysis/ExRootUtilities.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootUtilities.h
+

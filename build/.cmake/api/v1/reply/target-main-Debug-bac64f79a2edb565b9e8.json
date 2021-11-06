@@ -1,0 +1,346 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "main"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"add_compile_options",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 44,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 26,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 30,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 34,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 36,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 24,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -DDEBUG  "
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-c"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-g"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-pthread"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-std=c++14"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-m64"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-I/home/gerrit/root/include"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-I/usr/local/include"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-Wl,-rpath,/usr/local/lib"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-L/usr/local/lib"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-lfastjettools"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-lfastjet"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-lm"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-lfastjetplugins"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-lsiscone_spherical"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-lsiscone"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-llibPhysics"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-I/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 6,
+					"path" : "/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"id" : "main::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g -DDEBUG",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-L/home/gerrit/root/lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGui",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lCore",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lImt",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lRIO",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lNet",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lHist",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGraf",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGraf3d",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGpad",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lROOTVecOps",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lTree",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lTreePlayer",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lRint",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lPostscript",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lMatrix",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lPhysics",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lMathCore",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lThread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lMultiProc",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lROOTDataFrame",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-pthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lm",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-rdynamic",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-L/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lDelphes",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lPhysics",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lMathCore",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lThread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lMultiProc",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lROOTDataFrame",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lm",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lDelphes",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "main",
+	"nameOnDisk" : "main",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/main.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

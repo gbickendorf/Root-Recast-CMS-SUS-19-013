@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/build",
+  "command": "/bin/g++-9   -I/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/include  -g -DDEBUG   -c -g -Wall -pthread -std=c++14 -m64 -I/home/gerrit/root/include -I/usr/local/include -Wl,-rpath,/usr/local/lib -L/usr/local/lib -lfastjettools -lfastjet -lm -lfastjetplugins -lsiscone_spherical -lsiscone -llibPhysics -I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis -I/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0 -o CMakeFiles/main.dir/src/main.cpp.o -c /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/main.cpp",
+  "file": "/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/main.cpp"
+}
+]

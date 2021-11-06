@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/Main.dir/src/main.cpp.o  -o Main  -Wl,-rpath,/home/gerrit/root/lib -lPUBLIC /home/gerrit/root/lib/libNet.so /home/gerrit/root/lib/libRIO.so /home/gerrit/root/lib/libThread.so /home/gerrit/root/lib/libCore.so -lpthread 

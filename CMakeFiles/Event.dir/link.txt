@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libEvent.so -o libEvent.so CMakeFiles/Event.dir/src/main.cc.o  -Wl,-rpath,/home/gerrit/root/lib /home/gerrit/root/lib/libNet.so /home/gerrit/root/lib/libRIO.so /home/gerrit/root/lib/libThread.so /home/gerrit/root/lib/libCore.so -lpthread 
