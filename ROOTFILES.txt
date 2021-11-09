@@ -1,4 +1,5 @@
-/media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun9.root
-/media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun10.root
-/media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun1.root
-/media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun8.root
+/media/gerrit/Files/DelphesEvents/ClusterFiles/run_103/Events.root
+/media/gerrit/Files/DelphesEvents/ClusterFiles/run_104/Events.root
+/media/gerrit/Files/DelphesEvents/ClusterFiles/run_102/Events.root
+/media/gerrit/Files/DelphesEvents/ClusterFiles/run_106/Events.root
+/media/gerrit/Files/DelphesEvents/ClusterFiles/run_105/Events.root

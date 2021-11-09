@@ -106,7 +106,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   //allEntries=10000;
   cout << "** Chain contains " << allEntries << " events" << endl;
 
-  GenParticle *particle;
+  //GenParticle *particle;
   Electron *electron;
   Photon *photon;
   Muon *muon;
@@ -144,7 +144,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   Long64_t survived=0;
   // Loop over all events
   //allEntries=1000;
-  for(entry = 0; entry < allEntries; ++entry)
+  for(entry = 0; entry < allEntries; ++entry)  
   {
     if(entry % 1000 == 0)
       printf("%lld\n",entry);
@@ -178,8 +178,8 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
     for(i = 0; i < branchElectron->GetEntriesFast(); ++i)
     {
       electron = (Electron*) branchElectron->At(i);
-      particle = (GenParticle*) electron->Particle.GetObject();
-      if(particle->PT > 10 && ToggleCut[5]&&electron->IsolationVar>0.1)
+      
+      if(electron->PT > 10 && ToggleCut[5]&&electron->IsolationVar>0.1)
       {
         NCut[5]++;
         if(!ToggleAllCuts)
@@ -216,11 +216,10 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
     for(i = 0; i < branchMuon->GetEntriesFast(); ++i)
     {
       muon = (Muon*) branchMuon->At(i);
-      particle = (GenParticle*) muon->Particle.GetObject();
 
       //plots->fMuonDeltaPT->Fill((particle->PT - muon->PT)/particle->PT);
       //plots->fMuonDeltaEta->Fill((particle->Eta - muon->Eta)/particle->Eta);
-      if(particle->PT > 10 && ToggleCut[5]&&muon->IsolationVar>0.2)
+      if(muon->PT > 10 && ToggleCut[5]&&muon->IsolationVar>0.2)
       {
         NCut[5]++;
         if(!ToggleAllCuts)
@@ -318,9 +317,10 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 
         if(object->IsA() == GenParticle::Class())
         {
-          particle = (GenParticle*) object;
-          cout << "    GenPart pt: " << particle->PT << ", eta: " << particle->Eta << ", phi: " << particle->Phi << endl;
-          momentum += particle->P4();
+          printf("FUCK\n");
+          //particle = (GenParticle*) object;
+          // << "    GenPart pt: " << particle->PT << ", eta: " << particle->Eta << ", phi: " << particle->Phi << endl;
+          //momentum += particle->P4();
         }
         else if(object->IsA() == Track::Class())
         {
@@ -389,13 +389,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 }
 
 int main()
-{  TChain chains("Delphes");
-  chains.Add("/media/gerrit/Files/DelphesEvents/DelphesTestRun/Events.root");
-  ExRootTreeReader *treeReaders = new ExRootTreeReader(&chains);
-  TestPlots *plotss = new TestPlots;
-  AnalyseEvents(treeReaders,plotss);
-  //exampleMacro();
-  return 0;
+{
 
     // Create chain of root trees
   TChain chain("Delphes");
