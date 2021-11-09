@@ -24,16 +24,14 @@ void exampleMacro()
   c1->cd();
   // Create chain of root trees
   TChain chain("Delphes");
-  chain.Add("/media/gerrit/Files/DelphesEvents/Z1234J/Z234JRun1.root");
+  chain.Add("/media/gerrit/Files/DelphesEvents/DelphesTestRun/mlm2.root");
 
   // Create object of class ExRootTreeReader
   ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
   Long64_t numberOfEntries = treeReader->GetEntries();
   // Get pointers to branches used in this analysis
-  TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
-  TClonesArray *branchAK8Jet = treeReader->UseBranch("AK8Jets");
-  TClonesArray *weights = treeReader->UseBranch("Weight");
-  TClonesArray *met = treeReader->UseBranch("MissingET");
+
+  TClonesArray *branch_track = treeReader->UseBranch("Track");
   // Book histograms
   TH1 *histJetPT = new TH1F("jet_pt", "jet P_{T}", 100, 0.0, 1000.0);
   const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
@@ -44,50 +42,16 @@ void exampleMacro()
   int passesOneJetCut = 0;
   int passesAllJetCuts = 0;
  // int passesWeight = 0;
- numberOfEntries=1000;
+ //numberOfEntries=1000;
   for (Int_t entry = 0; entry < numberOfEntries; ++entry)
   {
 
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
-    //printf("%E\n",weight->Weight);
-    // If event contains at least 1 jet
-    //double metval = ((MissingET *)met->At(0))->MET;
-    for(int i = 0; i < branchAK4Jet->GetEntriesFast();i++)
-    {
-      
-      // Take first jet
-      Jet *jet = (Jet *)branchAK4Jet->At(i);
-      printf("%d\n",jet->Constituents.GetEntriesFast());
-      for(int j = 0; j < jet->Constituents.GetEntriesFast(); ++j)
-      {
-        TObject *object = jet->Constituents.At(j);
-        printf("%E\n",jet->PT);
-        if(object == 0) continue;
+    if(branch_track->GetEntries()==1)
+      passesAllJetCuts++;
+      printf("%lld\n",branch_track->GetEntries());
 
-        if(object->IsA() == GenParticle::Class())
-        {
-          GenParticle* particle = (GenParticle*) object;
-          cout << "    GenPart pt: " << particle->PT << ", eta: " << particle->Eta << ", phi: " << particle->Phi << endl;
-        }
-        else if(object->IsA() == Track::Class())
-        {
-          Track* track = (Track*) object;
-          cout << "    Track pt: " << track->PT << ", eta: " << track->Eta << ", phi: " << track->Phi << endl;
-        }
-        else if(object->IsA() == Tower::Class())
-        {
-          Tower* tower = (Tower*) object;
-          cout << "    Tower pt: " << tower->ET << ", eta: " << tower->Eta << ", phi: " << tower->Phi << endl;
-        }
-      }
-      // Plot jet transverse momentum
-
-      // Print jet transverse momentum
-      //cout << jet->PT << endl;
-    }
-    //if(passesAllJetCuts>10)
-    //break;
   }
   printf("%lld\n%d\n%d\n", numberOfEntries, passesOneJetCut, passesAllJetCuts);
 
@@ -124,19 +88,19 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   TH1 *histHT = new TH1F("HT", "HT", 100, 0.0, 1000.0);
   const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
   TH1 *histMet = new TH1F("ptmiss", "ptmiss", 6, bins);
-  TClonesArray *branchParticle = treeReader->UseBranch("Particle");
+  //TClonesArray *branchParticle = treeReader->UseBranch("Particle");
   TClonesArray *branchElectron = treeReader->UseBranch("Electron");
   TClonesArray *branchPhoton = treeReader->UseBranch("Photon");
   TClonesArray *branchMuon = treeReader->UseBranch("Muon");
   TClonesArray *branchTrack = treeReader->UseBranch("Track");
-  TClonesArray *branchEFlowTrack = treeReader->UseBranch("EFlowTrack");
-  TClonesArray *branchEFlowPhoton = treeReader->UseBranch("EFlowPhoton");
-  TClonesArray *branchEFlowNeutralHadron = treeReader->UseBranch("EFlowNeutralHadron");
+  //TClonesArray *branchEFlowTrack = treeReader->UseBranch("EFlowTrack");
+  //TClonesArray *branchEFlowPhoton = treeReader->UseBranch("EFlowPhoton");
+  //TClonesArray *branchEFlowNeutralHadron = treeReader->UseBranch("EFlowNeutralHadron");
   TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
   TClonesArray *branchAK8Jet = treeReader->UseBranch("AK8Jets");
   TClonesArray *branchMET = treeReader->UseBranch("MissingET");
   //TClonesArray *branchWeight = treeReader->UseBranch("LHEFEvent");
-  TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
+  //TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
 
   Long64_t allEntries = treeReader->GetEntries();
   //allEntries=10000;
@@ -168,7 +132,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   ToggleCut[2]=1; //PT_miss > 300GeV
   ToggleCut[3]=1; //HT > 400 GeV
   ToggleCut[4]=1; //Phi(j,HTMiss)>0.5(0.3)
-  ToggleCut[5]=0; //~isolated Photon, Electron, Muon PT > 10 GeV
+  ToggleCut[5]=1; //~isolated Photon, Electron, Muon PT > 10 GeV
   ToggleCut[6]=1; //isolated Tracks mt> 100GeV, pt > 10GeV
   ToggleCut[7]=1; //2 AK8 Jets PT > 200 GeV
   ToggleCut[8]=1; //mJet of 2 AK8 Jets in [10,140]GeV
@@ -186,7 +150,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
       printf("%lld\n",entry);
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
-    ScalarHT *scHT= (ScalarHT*)branchHT->At(0);
+    //ScalarHT *scHT= (ScalarHT*)branchHT->At(0);
     //histHT->Fill(scHT->HT);
     //Weight *weight = (Weight*)branchWeight->At(0);
     //if(weight->Weight == 0&&ToggleCut[0])
@@ -234,8 +198,8 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
       // skip photons with references to multiple particles
       if(photon->Particles.GetEntriesFast() != 1) continue;
 
-      particle = (GenParticle*) photon->Particles.At(0);
-      if(particle->PT > 10 && ToggleCut[5])
+      //particle = (GenParticle*) photon->Particles.At(0);
+      if(photon->PT > 10 && ToggleCut[5])
       {
         NCut[5]++;
         if(!ToggleAllCuts)
@@ -425,7 +389,13 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
 }
 
 int main()
-{  
+{  TChain chains("Delphes");
+  chains.Add("/media/gerrit/Files/DelphesEvents/DelphesTestRun/Events.root");
+  ExRootTreeReader *treeReaders = new ExRootTreeReader(&chains);
+  TestPlots *plotss = new TestPlots;
+  AnalyseEvents(treeReaders,plotss);
+  //exampleMacro();
+  return 0;
 
     // Create chain of root trees
   TChain chain("Delphes");
@@ -444,5 +414,5 @@ int main()
   ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
   TestPlots *plots = new TestPlots;
   AnalyseEvents(treeReader,plots);
-  //exampleMacro();
+  //exampleMacro(); /cephfs/user/s6gebick/ClusterRes/Z/DelphesEvents/run_231/Events.root
 }
