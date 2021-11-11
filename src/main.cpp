@@ -146,8 +146,21 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   //allEntries=1000;
   for(entry = 0; entry < allEntries; ++entry)  
   {
-    if(entry % 1000 == 0)
+    if(entry % 10000 == 0)
       printf("%lld\n",entry);
+
+    if(entry%100000==0)
+    {
+      printf("\n\nTotal %lld\nSurvived %lld\nEfficiency %f\n",allEntries,survived,((float)survived)/allEntries);
+      histHT->Draw();
+      c1->SaveAs("HT.eps");
+      histMet->Draw();
+      c1->SaveAs("MET.eps");
+      for(int i = 0; i < 10; i++)
+      {
+        printf("%d %d %d\n",i,ToggleCut[i],NCut[i]);
+      }
+    }
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
     //ScalarHT *scHT= (ScalarHT*)branchHT->At(0);
@@ -388,13 +401,11 @@ void AnalyseEvents(ExRootTreeReader *treeReader, TestPlots *plots)
   }
 }
 
-int main()
+void RunBigAnalysis()
 {
-
-    // Create chain of root trees
   TChain chain("Delphes");
   std::ifstream file("ROOTFILES.txt");
-  int i = 3;
+  int i = -1;
   if (file.is_open()) {
     std::string line;
     while (std::getline(file, line)) {
@@ -408,5 +419,137 @@ int main()
   ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
   TestPlots *plots = new TestPlots;
   AnalyseEvents(treeReader,plots);
+}
+
+void FindNormalisation()
+{
+  TChain chain("Delphes");
+  chain.Add("/media/gerrit/Files/DelphesEvents/ClusterFiles/run_102/Events.root");
+  //chain.Add("/media/gerrit/Files/DelphesEvents/Normalise/NormalisationZlarge.root");
+  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
+
+  TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
+  TClonesArray *branchAK8Jet = treeReader->UseBranch("AK8Jets");
+  TClonesArray *branchMET = treeReader->UseBranch("MissingET");
+  //TClonesArray *branchWeight = treeReader->UseBranch("LHEFEvent");
+  TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
+  double HT=0.0;
+  Int_t NJetAK4;
+  Long64_t allEntries = treeReader->GetEntries();
+  //allEntries=10000;
+  cout << "** Chain contains " << allEntries << " events" << endl;
+  int PassesHTCut=0;
+  int PassesMetCut=0;
+  int PassBothCuts=0;
+  int brCut=0;
+
+  int verbose =0;
+  for(Long64_t entry = 0; entry < allEntries; ++entry)  
+  {
+    HT=0.0;
+    if(verbose && entry % 1000 == 0)
+      printf("%lld\n",entry);
+    // Load selected branches with data from specified event
+    treeReader->ReadEntry(entry);
+    NJetAK4=NJetAK4=branchAK4Jet->GetEntriesFast();
+    if(((MissingET *)branchMET->At(0))->MET>300.0)
+      PassesMetCut++;
+    for(int i = 0; i < NJetAK4; ++i)
+    {
+      Jet* jet = (Jet*) branchAK4Jet->At(i);
+      HT+=jet->PT;
+    }
+    if(HT>400.0)
+      PassesHTCut++;
+    if(HT>400 && ((MissingET *)branchMET->At(0))->MET>300.0)
+      PassBothCuts++;
+    if(branchHT!=NULL && ((ScalarHT*)branchHT->At(0))->HT > 400)
+      brCut++;
+  }
+  printf("HT:\n%E\n%lld\n%lld\n\n",1.0*PassesHTCut/allEntries,PassesHTCut,allEntries);
+  printf("MET:\n%E\n%lld\n%lld\n",1.0*PassesMetCut/allEntries,PassesMetCut,allEntries);
+}
+
+void FindInvisible()
+{
+  TCanvas *c1 = new TCanvas("c1", "c1");
+  c1->cd();
+  TH1 *histGenMET = new TH1F("gMET", "gMET", 100, 0.0, 1000.0);
+  TH1 *histMET = new TH1F("MET", "MET", 100, 0.0, 1000.0);
+  TChain chain("Delphes");
+  ///.0chain.Add("/media/gerrit/Files/DelphesEvents/ClusterFiles/run_102/Events.root");
+  chain.Add("/media/gerrit/Files/DelphesEvents/DelphesTestRun/CorrectIsolation.root");
+  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
+
+  TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
+  TClonesArray *branchAK8Jet = treeReader->UseBranch("AK8Jets");
+  TClonesArray *branchMET = treeReader->UseBranch("MissingET");
+  TClonesArray *branchPart = treeReader->UseBranch("Particle");
+  TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
+  TClonesArray *branchGenMET = treeReader->UseBranch("GenMissingET");
+  double HT=0.0;
+  Int_t NJetAK4;
+  Long64_t allEntries = treeReader->GetEntries();
+  //allEntries=10000;
+  cout << "** Chain contains " << allEntries << " events" << endl;
+  int PassesHTCut=0;
+  int PassesMetCut=0;
+  int PassBothCuts=0;
+  int brCut=0;
+
+  int verbose =0;
+  //allEntries=10;
+  for(Long64_t entry = 0; entry < allEntries; ++entry)  
+  {
+    HT=0.0;
+    if(verbose && entry % 1000 == 0)
+      printf("%lld\n",entry);
+    // Load selected branches with data from specified event
+    treeReader->ReadEntry(entry);
+    int nParticles=branchPart->GetEntriesFast();
+    double px=0.0;
+    double py=0.0;
+    for (size_t i = 0; i < nParticles; i++)
+    {
+      GenParticle * part = (GenParticle*) branchPart->At(i);
+      if(part->Status ==1&&abs(part->PID)<20&&part->PID%2==0)
+      {
+        px+=part->Px;
+        py+=part->Py;
+      }
+    }
+    MissingET * genMET= (MissingET*) branchGenMET->At(0);
+    //printf("PT=%E %E\n",sqrt(px*px+py*py),genMET->MET);
+    histGenMET->Fill(genMET->MET);
+    histMET->Fill(((MissingET *)branchMET->At(0))->MET);
+      NJetAK4=NJetAK4=branchAK4Jet->GetEntriesFast();
+    if(((MissingET *)branchMET->At(0))->MET>300.0)
+      PassesMetCut++;
+    for(int i = 0; i < NJetAK4; ++i)
+    {
+      Jet* jet = (Jet*) branchAK4Jet->At(i);
+      HT+=jet->PT;
+    }
+    if(HT>400.0)
+      PassesHTCut++;
+    if(HT>400 && ((MissingET *)branchMET->At(0))->MET>300.0)
+      PassBothCuts++;
+    if(((ScalarHT*)branchHT->At(0))->HT > 400)
+      brCut++;
+  }
+  printf("HT:\n%E\n%lld\n%lld\n\n",1.0*PassesHTCut/allEntries,PassesHTCut,allEntries);
+  printf("MET:\n%E\n%lld\n%lld\n",1.0*PassesMetCut/allEntries,PassesMetCut,allEntries);
+  histMET->Draw();
+  c1->SaveAs("MET.eps");
+  histGenMET->Draw();
+  c1->SaveAs("GenMET.eps");
+}
+
+int main()
+{
+  RunBigAnalysis();
+  //FindInvisible();
+    // Create chain of root trees
+
   //exampleMacro(); /cephfs/user/s6gebick/ClusterRes/Z/DelphesEvents/run_231/Events.root
 }
