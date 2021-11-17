@@ -1,5 +1,0 @@
-/media/gerrit/Files/DelphesEvents/ClusterFiles/run_103/Events.root
-/media/gerrit/Files/DelphesEvents/ClusterFiles/run_104/Events.root
-/media/gerrit/Files/DelphesEvents/ClusterFiles/run_102/Events.root
-/media/gerrit/Files/DelphesEvents/ClusterFiles/run_106/Events.root
-/media/gerrit/Files/DelphesEvents/ClusterFiles/run_105/Events.root

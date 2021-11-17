@@ -33,7 +33,7 @@ execute_process(COMMAND "fastjet-config" "--cxxflags" "--libs" "--plugins" OUTPU
 separate_arguments(FASTJET_FLAGS UNIX_COMMAND "${FASTJET_FLAGS}")
 add_compile_options(${FASTJET_FLAGS})
 
-add_compile_options(-llibPhysics -I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis -I/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0)
+add_compile_options(-llibPhysics -I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis -I/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0 -I/home/gerrit/Documents/PHD/Tools/boost_1_77_0)
 
 link_libraries(-L/home/gerrit/root/lib -lGui -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lROOTDataFrame -pthread -lm -ldl -rdynamic)
 link_libraries(-L/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0 -lDelphes -lPhysics)

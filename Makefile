@@ -123,6 +123,114 @@ main/fast:
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
 
+src/Analysis.o: src/Analysis.cpp.o
+
+.PHONY : src/Analysis.o
+
+# target to build an object file
+src/Analysis.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Analysis.cpp.o
+.PHONY : src/Analysis.cpp.o
+
+src/Analysis.i: src/Analysis.cpp.i
+
+.PHONY : src/Analysis.i
+
+# target to preprocess a source file
+src/Analysis.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Analysis.cpp.i
+.PHONY : src/Analysis.cpp.i
+
+src/Analysis.s: src/Analysis.cpp.s
+
+.PHONY : src/Analysis.s
+
+# target to generate assembly for a file
+src/Analysis.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Analysis.cpp.s
+.PHONY : src/Analysis.cpp.s
+
+src/PassedEvent.o: src/PassedEvent.cpp.o
+
+.PHONY : src/PassedEvent.o
+
+# target to build an object file
+src/PassedEvent.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/PassedEvent.cpp.o
+.PHONY : src/PassedEvent.cpp.o
+
+src/PassedEvent.i: src/PassedEvent.cpp.i
+
+.PHONY : src/PassedEvent.i
+
+# target to preprocess a source file
+src/PassedEvent.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/PassedEvent.cpp.i
+.PHONY : src/PassedEvent.cpp.i
+
+src/PassedEvent.s: src/PassedEvent.cpp.s
+
+.PHONY : src/PassedEvent.s
+
+# target to generate assembly for a file
+src/PassedEvent.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/PassedEvent.cpp.s
+.PHONY : src/PassedEvent.cpp.s
+
+src/Plots.o: src/Plots.cpp.o
+
+.PHONY : src/Plots.o
+
+# target to build an object file
+src/Plots.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Plots.cpp.o
+.PHONY : src/Plots.cpp.o
+
+src/Plots.i: src/Plots.cpp.i
+
+.PHONY : src/Plots.i
+
+# target to preprocess a source file
+src/Plots.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Plots.cpp.i
+.PHONY : src/Plots.cpp.i
+
+src/Plots.s: src/Plots.cpp.s
+
+.PHONY : src/Plots.s
+
+# target to generate assembly for a file
+src/Plots.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Plots.cpp.s
+.PHONY : src/Plots.cpp.s
+
+src/RootIO.o: src/RootIO.cpp.o
+
+.PHONY : src/RootIO.o
+
+# target to build an object file
+src/RootIO.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/RootIO.cpp.o
+.PHONY : src/RootIO.cpp.o
+
+src/RootIO.i: src/RootIO.cpp.i
+
+.PHONY : src/RootIO.i
+
+# target to preprocess a source file
+src/RootIO.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/RootIO.cpp.i
+.PHONY : src/RootIO.cpp.i
+
+src/RootIO.s: src/RootIO.cpp.s
+
+.PHONY : src/RootIO.s
+
+# target to generate assembly for a file
+src/RootIO.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/RootIO.cpp.s
+.PHONY : src/RootIO.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -159,6 +267,18 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... main"
+	@echo "... src/Analysis.o"
+	@echo "... src/Analysis.i"
+	@echo "... src/Analysis.s"
+	@echo "... src/PassedEvent.o"
+	@echo "... src/PassedEvent.i"
+	@echo "... src/PassedEvent.s"
+	@echo "... src/Plots.o"
+	@echo "... src/Plots.i"
+	@echo "... src/Plots.s"
+	@echo "... src/RootIO.o"
+	@echo "... src/RootIO.i"
+	@echo "... src/RootIO.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
