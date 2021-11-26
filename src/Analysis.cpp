@@ -63,27 +63,33 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
   boost::progress_display *show_progress = new boost::progress_display(allEntries);
   for (entry = 0; entry < allEntries; ++entry)
   {
+    
     PassedEvent event;
+    int nLep=0;
+    int nPho=0;
+    double PTPho=0.0;
     event.status = status;
     ++(*show_progress);
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
+
+    MET = ((MissingET *)branchMET->At(0))->MET;
     Ntracks = branchTrack->GetEntries();
     NJetAK4 = branchAK4Jet->GetEntriesFast();
+
     if (NJetAK4 < 2 && ToggleCut[1])
     {
       NCut[1]++;
       if (!ToggleAllCuts)
         continue;
     }
-    MET = ((MissingET *)branchMET->At(0))->MET;
-    if (MET < 300.0 && ToggleCut[2])
+
+    if (branchAK8Jet->GetEntriesFast() < 2 || ((Jet *)branchAK8Jet->At(1))->PT<200)
     {
-      NCut[2]++;
-      if (!ToggleAllCuts)
-        continue;
+      NCut[7]++;
+      continue;
     }
-    event.ptmiss = MET;
+    
     cutLoop = 0;
     // Loop over all electrons in event
     for (i = 0; i < branchElectron->GetEntriesFast(); ++i)
@@ -92,10 +98,7 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
 
       if (electron->PT > 10 && ToggleCut[5] && electron->IsolationVar > 0.1)
       {
-        NCut[5]++;
-        cutLoop++;
-        if (!ToggleAllCuts)
-          break;
+        nLep++;
       }
     }
 
@@ -111,10 +114,8 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
       //particle = (GenParticle*) photon->Particles.At(0);
       if (photon->PT > 10 && ToggleCut[5])
       {
-        NCut[5]++;
-        cutLoop++;
-        if (!ToggleAllCuts)
-          break;
+        nPho++;
+        PTPho=photon->PT;
       }
     }
 
@@ -124,14 +125,20 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
       muon = (Muon *)branchMuon->At(i);
       if (muon->PT > 10 && ToggleCut[5] && muon->IsolationVar > 0.2)
       {
-        NCut[5]++;
-        cutLoop++;
-        if (!ToggleAllCuts)
-          break;
+        nLep++;
       }
     }
-    if (cutLoop)
+    if(nLep>1&&ToggleCut[5])
+    {
+      NCut[5]++;
       continue;
+    }
+    if(nPho>1&&ToggleCut[5])
+    {
+      NCut[5]++;
+      continue;
+    }
+
     // Loop over all jets in event
     if (ToggleCut[6])
     {
@@ -141,7 +148,7 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
         Track *track = (Track *)branchTrack->At(itrack);
         double teta = track->Eta;
         double tphi = track->Phi;
-        if (sqrt(sq(track->Mass) + sq(track->PT)) > 100 && track->Eta > 2.4)
+        if (sqrt(sq(track->Mass) + sq(track->PT)) > 100 && abs(track->Eta) > 2.4)
           continue;
 
         double conePT = 0.0;
@@ -171,11 +178,6 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
       }
     }
 
-    if (branchAK8Jet->GetEntriesFast() < 2)
-    {
-      //NCut[7]++;
-      continue;
-    }
     softDropMass = ((Jet *)branchAK8Jet->At(0))->SoftDroppedJet.Mag();
     event.mj1 = softDropMass;
     if ((softDropMass < 40.0 || softDropMass > 140.0) && ToggleCut[8])
@@ -195,18 +197,12 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
     HT = 0.0;
     HTmiss = TVector3(0.0, 0.0, 0.0);
     cutLoop = 0;
+    int cutBTag=0;
     for (i = 0; i < NJetAK4; ++i)
     {
       jet = (Jet *)branchAK4Jet->At(i);
       HT += jet->PT;
       HTmiss += TVector3(jet->PT * cos(jet->Phi), jet->PT * sin(jet->Phi), jet->PT * sinh(jet->Eta));
-
-      if (i == 1 && jet->PT < 200.0 && ToggleCut[7])
-      {
-        NCut[7]++;
-        if (!ToggleAllCuts)
-          continue;
-      }
       for (j = 0; j < jet->Constituents.GetEntriesFast(); ++j)
       {
         object = jet->Constituents.At(j);
@@ -231,7 +227,7 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
       }
       if (jet->BTag && sqrt(sq(((Jet *)branchAK8Jet->At(1))->Eta - jet->Eta) + sq(((Jet *)branchAK8Jet->At(1))->Phi - jet->Phi)) < 0.8)
       {
-        cutLoop++;
+        cutBTag++;
       }
     }
     if (cutLoop && ToggleCut[9])
@@ -265,6 +261,35 @@ void Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &
       if (!ToggleAllCuts)
         continue;
     }
+    if(nPho ==1 && PTPho >200)
+    {
+      event.ptmiss=PTPho;
+      event.status=11;
+      events.push_back(event);
+    }
+    if(nLep==1&&MET>200&&cutBTag==0)
+    {
+      event.ptmiss=MET;
+      event.status=10;
+      events.push_back(event);
+    }
+    if((nLep||nPho)&&ToggleCut[5])
+    {
+      NCut[5]++;
+      continue;
+    }
+    if(cutBTag&&ToggleCut[9])
+    {
+      NCut[9]++;
+      continue;
+    }
+    if (MET < 300.0 && ToggleCut[2])
+    {
+      NCut[2]++;
+      if (!ToggleAllCuts)
+        continue;
+    }
+    event.ptmiss = MET;
     survived++;
     events.push_back(event);
     //histMet->Fill(MET);
@@ -371,7 +396,6 @@ void Analysis::AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vec
       // skip photons with references to multiple particles
       if (photon->Particles.GetEntriesFast() != 1)
         continue;
-      event.ptmiss = max(event.ptmiss, (double)photon->PT);
       //particle = (GenParticle*) photon->Particles.At(0);
       if (photon->PT > 10 && ToggleCut[5])
       {
@@ -382,6 +406,7 @@ void Analysis::AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vec
           if (!ToggleAllCuts)
             break;
         }
+        event.ptmiss = (double)photon->PT;
         nPhoton++;
       }
     }
@@ -633,24 +658,18 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
     }
     event.ptmiss = MET;
     // Loop over all electrons in event
-    cutLoop = 0;
     for (i = 0; i < branchElectron->GetEntriesFast(); ++i)
     {
       electron = (Electron *)branchElectron->At(i);
 
       if (electron->PT > 10 && ToggleCut[5] && electron->IsolationVar > 0.1)
       {
-        if (nLepton)
-        {
-          NCut[5]++;
-          if (!ToggleAllCuts)
-            cutLoop++;
-        }
         nLepton++;
       }
     }
 
     // Loop over all photons in event
+    cutLoop = 0;
     for (i = 0; i < branchPhoton->GetEntriesFast(); ++i)
     {
       photon = (Photon *)branchPhoton->At(i);
@@ -661,11 +680,12 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
 
       //particle = (GenParticle*) photon->Particles.At(0);
       if (photon->PT > 10 && ToggleCut[5])
-      {
-        NCut[5]++;
-        if (!ToggleAllCuts)
-          continue;
-      }
+        cutLoop++;
+    }
+    if (cutLoop)
+    {
+      NCut[5]++;
+      continue;
     }
 
     // Loop over all muons in event
@@ -674,16 +694,10 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
       muon = (Muon *)branchMuon->At(i);
       if (muon->PT > 10 && ToggleCut[5] && muon->IsolationVar > 0.2)
       {
-        if (nLepton)
-        {
-          NCut[5]++;
-          if (!ToggleAllCuts)
-            cutLoop++;
-        }
         nLepton++;
       }
     }
-    if (cutLoop && nLepton != 1)
+    if (nLepton != 1)
       continue;
     // Loop over all jets in event
     if (ToggleCut[6])
@@ -694,7 +708,7 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
         Track *track = (Track *)branchTrack->At(itrack);
         double teta = track->Eta;
         double tphi = track->Phi;
-        if (sqrt(sq(track->Mass) + sq(track->PT)) > 100 && track->Eta > 2.4)
+        if (sqrt(sq(track->Mass) + sq(track->PT)) > 100 && abs(track->Eta) > 2.4)
           continue;
 
         double conePT = 0.0;
@@ -1182,12 +1196,11 @@ void Analysis::RunBigAnalysis()
   double totalWcrosssection = 1.77300e5;
   double totalttcrosssection = 674.1;
   cout << "FIND NORMS" << endl;
-  size_t numZEvents = 0;// integratedLuminosity * totalZcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ZNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt");
-  size_t numWEvents = 0;// integratedLuminosity * totalWcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/WNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/media/gerrit/Files/DelphesEvents/W-Cluster/ROOTFILES.txt");
+  size_t numZEvents = 0; // integratedLuminosity * totalZcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ZNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt");
+  size_t numWEvents = 0; // integratedLuminosity * totalWcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/WNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/media/gerrit/Files/DelphesEvents/W-Cluster/ROOTFILES.txt");
   size_t numttEvents = integratedLuminosity * totalttcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ttNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/media/gerrit/Files/DelphesEvents/tt-Cluster/ROOTFILES.txt");
 
   vector<PassedEvent> events;
-
 
   cout << numZEvents << endl
        << numWEvents << endl;
@@ -1289,7 +1302,7 @@ void Analysis::FitCherbyshev(vector<PassedEvent> &events, double &bNorm, vector<
   TH1F *h1 = new TH1F("h1", "", 20, 40.0, 140.0);
   for (size_t i = 0; i < events.size(); i++)
   {
-    if (events[i].mj2 < 70.0 || events[i].mj2 > 100.0 || events[i].status >=10)
+    if (events[i].mj2 < 70.0 || events[i].mj2 > 100.0 || events[i].status >= 10)
       continue;
     h1->Fill(events[i].mj1);
   }
@@ -1343,7 +1356,7 @@ void Analysis::CalcTransferFactor(vector<PassedEvent> &events, double &bNorm, ve
   for (size_t i = 0; i < events.size(); i++)
   {
     PassedEvent event = events[i];
-    if(event.status>=10)
+    if (event.status >= 10)
       continue;
     if (event.mj1 < 70 || event.mj1 > 100)
       if (event.mj2 < 70 || event.mj2 > 100)
