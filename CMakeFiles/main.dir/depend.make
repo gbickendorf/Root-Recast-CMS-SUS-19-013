@@ -4,6 +4,7 @@
 CMakeFiles/main.dir/src/Analysis.cpp.o: src/Analysis.cpp
 CMakeFiles/main.dir/src/Analysis.cpp.o: include/Analysis.h
 CMakeFiles/main.dir/src/Analysis.cpp.o: include/PassedEvent.h
+CMakeFiles/main.dir/src/Analysis.cpp.o: include/RootIO.h
 
 CMakeFiles/main.dir/src/PassedEvent.cpp.o: src/PassedEvent.cpp
 CMakeFiles/main.dir/src/PassedEvent.cpp.o: include/PassedEvent.h

@@ -7,6 +7,7 @@ using namespace std;
 class PassedEvent : public TObject {
   public:  
     PassedEvent();
+    PassedEvent(const PassedEvent &evnt);
     PassedEvent(Double_t _mj1, Double_t _mj2, Double_t _ptmiss, Int_t _status);
 //    ~PassedEvent();
     Double_t mj1;

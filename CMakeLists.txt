@@ -28,15 +28,16 @@ add_compile_options(-c -g -Wall )
 execute_process(COMMAND "root-config" "--cflags" OUTPUT_VARIABLE ROOT_FLAGS)
 separate_arguments(ROOT_FLAGS UNIX_COMMAND "${ROOT_FLAGS}")
 add_compile_options(${ROOT_FLAGS})
+find_package(OpenMP REQUIRED)
 
 execute_process(COMMAND "fastjet-config" "--cxxflags" "--libs" "--plugins" OUTPUT_VARIABLE FASTJET_FLAGS)
 separate_arguments(FASTJET_FLAGS UNIX_COMMAND "${FASTJET_FLAGS}")
 add_compile_options(${FASTJET_FLAGS})
 
-add_compile_options(-llibPhysics -I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis -I/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0 -I/home/gerrit/Documents/PHD/Tools/boost_1_77_0)
+add_compile_options(-fopenmp -llibPhysics -I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis -I/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0 -I/home/gerrit/Documents/PHD/Tools/boost_1_77_0)
 
 link_libraries(-L/home/gerrit/root/lib -lGui -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lROOTDataFrame -pthread -lm -ldl -rdynamic)
-link_libraries(-L/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0 -lDelphes -lPhysics)
+link_libraries(-L/home/gerrit/Documents/PHD/Tools/Delphes-3.5.0 -lDelphes -lPhysics "${OpenMP_CXX_FLAGS}")
 
 file(GLOB SOURCES src/*.cpp)
 

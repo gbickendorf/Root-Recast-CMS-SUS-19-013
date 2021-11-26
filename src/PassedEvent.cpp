@@ -1,5 +1,12 @@
 #include "PassedEvent.h"
 //ClassImp(PassedEvent);
+PassedEvent::PassedEvent(const PassedEvent &evnt)
+{
+    mj1=evnt.mj1;
+    mj2=evnt.mj2;
+    ptmiss=evnt.ptmiss;
+    status=evnt.status;
+}
 
 PassedEvent::PassedEvent()
 {
