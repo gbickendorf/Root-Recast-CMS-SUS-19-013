@@ -223,7 +223,10 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
                 histLeptonValidationCR->Fill(evnt.ptmiss);
         }
     }
-    cout << histPhotonValidationSR->Integral() << endl;
+    cout << "Photon SR Val: " <<histPhotonValidationSR->Integral() << endl;
+    cout << "Photon CR Val: " <<histPhotonValidationCR->Integral() << endl;
+    cout << "Lepton SR Val: " <<histLeptonValidationSR->Integral() << endl;
+    cout << "Lepton CR Val: " <<histLeptonValidationCR->Integral() << endl;
     histPhotonValidationSR->Scale(1.0 / histPhotonValidationSR->Integral());
     histLeptonValidationSR->Scale(1.0 / histLeptonValidationSR->Integral());
     histPhotonValidationCR->Scale(1.0 / histPhotonValidationCR->Integral());
@@ -259,7 +262,7 @@ void Plots::PlotAll()
     double transferfactor, bNorm;
     vector<double> B_i, params;
 
-    RootIO::ReadEvents(events);
+    RootIO::ReadEvents("Normtest.root",events);
     Plots::PlotPTMiss(events);
     Analysis::FitCherbyshev(events, bNorm, params);
     Analysis::CalcTransferFactor(events, bNorm, B_i, transferfactor);

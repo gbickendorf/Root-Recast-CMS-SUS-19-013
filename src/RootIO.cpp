@@ -24,7 +24,7 @@ void RootIO::SaveEvents(const char * filename,vector<PassedEvent> events)
 
 void RootIO::SaveEvents(vector<PassedEvent> events)
 {
-  RootIO::SaveEvents("Analysis100percent.root",events);
+  RootIO::SaveEvents("Analysis100percentNew.root",events);
 }
 
 void RootIO::ReadEvents(const char * filename,vector<PassedEvent> &events)
@@ -80,6 +80,7 @@ void RootIO::GetRootFiles(const char * filename,TChain &chain, int nFiles)
 {
   vector<string> rootFilePaths;
   RootIO::GetRootFilePath(filename,rootFilePaths,nFiles);
+  std::reverse(rootFilePaths.begin(), rootFilePaths.end());
   for (size_t i = 0; i < rootFilePaths.size(); i++)
   {
     chain.Add(rootFilePaths[i].c_str());

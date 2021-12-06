@@ -11,8 +11,10 @@ CMakeFiles/main.dir/src/PassedEvent.cpp.o
  include/PassedEvent.h
 CMakeFiles/main.dir/src/Plots.cpp.o
  /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Plots.cpp
+ include/Analysis.h
  include/PassedEvent.h
  include/Plots.h
+ include/RootIO.h
 CMakeFiles/main.dir/src/RootIO.cpp.o
  /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RootIO.cpp
  include/PassedEvent.h

@@ -49,6 +49,8 @@ classes/DelphesClasses.h
 ../include/classes/DelphesClasses.h
 boost/progress.hpp
 -
+algorithm
+-
 boost/math/special_functions/chebyshev.hpp
 -
 
@@ -76,6 +78,8 @@ TChain.h
 iostream
 -
 fstream
+-
+algorithm
 -
 
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Analysis.cpp

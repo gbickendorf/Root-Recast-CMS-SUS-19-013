@@ -23,6 +23,7 @@
 #include <TFitResult.h>
 #include "classes/DelphesClasses.h"
 #include <boost/progress.hpp>
+#include <algorithm>
 #include <boost/math/special_functions/chebyshev.hpp>
 
 
@@ -34,6 +35,7 @@ class Analysis {
         static TF1 *fitFunc;
     public:
         static void AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents, int status);
+        static void AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents, int status);
         static void AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents);
         static void AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents);
         static void AnalyseEvents2(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents, int status);
