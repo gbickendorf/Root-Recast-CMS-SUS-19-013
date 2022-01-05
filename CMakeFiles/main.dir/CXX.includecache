@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Analysis.cpp
-Analysis.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Analysis.h
-
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/main.cpp
 PassedEvent.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/PassedEvent.h
@@ -33,9 +29,13 @@ ExRootAnalysis/ExRootUtilities.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/ExRootAnalysis/ExRootUtilities.h
 iostream
 -
+TROOT.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/TROOT.h
 omp.h
 -
 unistd.h
+-
+TLegend.h
 -
 vector
 -
@@ -48,6 +48,8 @@ iostream
 fstream
 -
 numeric
+-
+random
 -
 PassedEvent.h
 include/PassedEvent.h

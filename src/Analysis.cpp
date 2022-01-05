@@ -44,7 +44,6 @@ void Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEvent
   Tower *tower;
 
   Jet *jet;
-  TObject *object;
 
   TLorentzVector momentum;
 
@@ -161,8 +160,9 @@ void Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEvent
       continue;
     }
     
-    for (size_t i = 0; i < 7; i++)
+    for (i = 0; i < 7; i++)
     {
+      //cout<<branchElectrons[i]->GetEntriesFast()<<"  "<<i<<endl;
       for (size_t lepIndex = 0; lepIndex < branchElectrons[i]->GetEntriesFast(); lepIndex++)
       {
         electron = (Electron *)branchElectrons[i]->At(lepIndex);
@@ -182,7 +182,7 @@ void Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEvent
       photon = (Photon *)branchPhoton->At(i);
       if (photon->Particles.GetEntriesFast() != 1)
         continue;
-
+      double looseWP=1.3 / photon->PT + 0.005;
       if (photon->PT > 10 && ToggleCut[5] && photon->IsolationVar < 1.3 / photon->PT + 0.005)
       {
         nPho++;
@@ -1421,17 +1421,16 @@ void Analysis::AnalyseEvents2(ExRootTreeReader *treeReader, vector<PassedEvent> 
   }
 }
 
-double Analysis::FindNormalisation(const char *filename)
+double Analysis::FindNormalisation(const char *filename, int nFiles, vector<double> &mets)
 {
 
   TChain chain("Delphes");
-  int maxFiles = 100;
-  RootIO::GetRootFiles(filename, chain, maxFiles);
+  RootIO::GetRootFiles(filename, chain, nFiles);
   ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
 
   TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
   TClonesArray *branchMET = treeReader->UseBranch("MissingET");
-  //TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
+  TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
 
   double HT = 0.0;
   Int_t NJetAK4;
@@ -1454,7 +1453,10 @@ double Analysis::FindNormalisation(const char *filename)
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
     NJetAK4 = branchAK4Jet->GetEntriesFast();
-    double metttt = ((MissingET *)branchMET->At(0))->MET;
+    double met = ((MissingET *)branchMET->At(0))->MET;
+    if(met==0)
+      continue;
+    correctEntry++;
     //if(metttt==0)
       //cout << "jfjdkfjasjaldj"<< endl;
     //double htSc = ((ScalarHT *)branchHT->At(0))->HT;
@@ -1467,11 +1469,19 @@ double Analysis::FindNormalisation(const char *filename)
         HT += jet->PT;
     }
     hist->Fill(HT);
-    MissingET *met = (MissingET *)branchMET->At(0);
-    if (HT > 400.0 && metttt > 300) //0.00362575
-      PassesHTCut++;
+    /*
+        if(NJetAK4<2)
+      continue;*/
+    double htSc = ((ScalarHT *)branchHT->At(0))->HT;
+    //cout << HT-htSc<<endl;
+    if(HT <400)
+      continue;
+      
+    if(met < 300)
+      continue;
+    PassesHTCut++;
+    mets.push_back(met);
     //if(HT>0.0)
-    correctEntry++;
   }
   //hist->Fit("expo");
   hist->Draw();
@@ -1480,102 +1490,47 @@ double Analysis::FindNormalisation(const char *filename)
   return 1.0 * PassesHTCut / correctEntry;
 }
 
-void Analysis::RunBigAnalysis()
+double Analysis::FindNormalisation(const char *filename, int nFiles)
 {
-  ExRootTreeReader *treeReader;
-  double integratedLuminosity = 137000.0; //in pb^-1
-  double totalZcrosssection = 5.4100e4;
-  double totalWcrosssection = 1.77300e5;
-  double totalttcrosssection = 674.1;
-  cout << "FIND NORMS" << endl;
-  size_t scale = 1;
-  size_t numZEvents = integratedLuminosity * totalZcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ZNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt");
-  size_t numWEvents = integratedLuminosity * totalWcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/WNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/media/gerrit/Files/DelphesEvents/W-Cluster/ROOTFILES.txt");
-  size_t numttEvents = integratedLuminosity * totalttcrosssection * FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ttNorm-Cluster/ROOTFILES.txt") / FindNormalisation("/media/gerrit/Files/DelphesEvents/tt-Cluster/ROOTFILES.txt");
+  vector<double> mets;
+  return FindNormalisation(filename,nFiles,mets);
+}
 
-  vector<PassedEvent> events;
+double Analysis::FindNormalisation(const char *filename)
+{
+  return Analysis::FindNormalisation(filename,20);
+}
 
-  cout << numZEvents << endl
-       << numWEvents << endl
-       << numttEvents << endl;
-  cout << "ANALYSE Z" << endl;
-  TChain chainZ("Delphes");
-  RootIO::GetRootFiles("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt", chainZ);
-  treeReader = new ExRootTreeReader(&chainZ);
-  cout << "Need : " << numZEvents << " Events" << endl;
-  cout << "Have : " << treeReader->GetEntries() << " Events" << endl;
-  Analysis::AnalyseEventsNew(treeReader, events, numZEvents, 0);
-  RootIO::SaveEvents(events);
-  chainZ.Reset();
-
-  cout << "ANALYSE W" << endl;
-  TChain chainW("Delphes");
-  RootIO::GetRootFiles("/media/gerrit/Files/DelphesEvents/W-Cluster/ROOTFILES.txt", chainW);
-  treeReader = new ExRootTreeReader(&chainW);
-  cout << "Need : " << numWEvents << " Events" << endl;
-  cout << "Have : " << treeReader->GetEntries() << " Events" << endl;
-  Analysis::AnalyseEventsNew(treeReader, events, numWEvents, 1);
-  RootIO::SaveEvents(events);
-  chainW.Reset();
-
-  cout << "ANALYSE tt" << endl;
-  TChain chaintt("Delphes");
-  RootIO::GetRootFiles("/media/gerrit/Files/DelphesEvents/tt-Cluster/ROOTFILES.txt", chaintt);
-  treeReader = new ExRootTreeReader(&chaintt);
-  cout << "Need : " << numttEvents << " Events" << endl;
-  cout << "Have : " << treeReader->GetEntries() << " Events" << endl;
-  Analysis::AnalyseEventsNew(treeReader, events, numttEvents, 2);
-  RootIO::SaveEvents(events);
-  chaintt.Reset();
-  cout << events.size() << endl;
-  /*
-
-  cout << "Single Lepton Z" << endl;
-  TChain chainLepton("Delphes");
-  RootIO::GetRootFiles("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt", chainLepton);
-  treeReader = new ExRootTreeReader(&chainLepton);
-  Analysis::AnalyseEventsSingleLeptonSample(treeReader, events, numZEvents);
-  RootIO::SaveEvents(events);
-  chainLepton.Reset();
-
-  cout << "Single Lepton W" << endl;
-  RootIO::GetRootFiles("/media/gerrit/Files/DelphesEvents/W-Cluster/ROOTFILES.txt", chainLepton);
-  treeReader = new ExRootTreeReader(&chainLepton);
-  Analysis::AnalyseEventsSingleLeptonSample(treeReader, events, numWEvents);
-  RootIO::SaveEvents(events);
-  chainLepton.Reset();
-
-  cout << "Single Lepton tt" << endl;
-  RootIO::GetRootFiles("/media/gerrit/Files/DelphesEvents/tt-Cluster/ROOTFILES.txt", chainLepton);
-  treeReader = new ExRootTreeReader(&chainLepton);
-  Analysis::AnalyseEventsSingleLeptonSample(treeReader, events, numttEvents);
-  RootIO::SaveEvents(events);
-  chainLepton.Reset();
-
-  cout << "Single Photon Z" << endl;
-  TChain chainPhoton("Delphes");
-  RootIO::GetRootFiles("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt", chainPhoton);
-  treeReader = new ExRootTreeReader(&chainPhoton);
-  Analysis::AnalyseEventsSinglePhotonSample(treeReader, events, numZEvents);
-  RootIO::SaveEvents(events);
-  chainPhoton.Reset();
-
-  cout << "Single Photon W" << endl;
-  RootIO::GetRootFiles("/media/gerrit/Files/DelphesEvents/W-Cluster/ROOTFILES.txt", chainPhoton);
-  treeReader = new ExRootTreeReader(&chainPhoton);
-  Analysis::AnalyseEventsSinglePhotonSample(treeReader, events, numWEvents);
-  RootIO::SaveEvents(events);
-  chainPhoton.Reset();
-
-  cout << "Single Photon tt" << endl;
-  RootIO::GetRootFiles("/media/gerrit/Files/DelphesEvents/tt-Cluster/ROOTFILES.txt", chainPhoton);
-  treeReader = new ExRootTreeReader(&chainPhoton);
-  Analysis::AnalyseEventsSinglePhotonSample(treeReader, events, numttEvents);
-  RootIO::SaveEvents(events);
-  chainPhoton.Reset();
-
-  RootIO::SaveEvents(events);
-  */
+void Analysis::SampleFromEvents(vector<PassedEvent> &events)
+{
+  double loX[]={4.248,1.375,4.584,1.964};
+  double nloX[]={5.410,1.773,6.741,5.218};
+  double X[]={181.0,511.0,78.0,2344.0};
+  double ST[]={2284,1407,1172,10};
+  double NT[]={36753049,147113599,42475284,424699605};
+  vector<vector<PassedEvent>> rawEvents(4);
+  RootIO::ReadEvents("RootFiles/Z-Total.root",rawEvents[0],0);
+  RootIO::ReadEvents("RootFiles/W-Total.root",rawEvents[1],0);
+  RootIO::ReadEvents("RootFiles/tt-Total.root",rawEvents[2],0);
+  RootIO::ReadEvents("RootFiles/A-Total.root",rawEvents[3]);
+  random_device rd;
+  mt19937_64 gen(0);
+  uniform_real_distribution<double> dist(0.0,1.0);
+  for (size_t i = 0; i < 4; i++)
+  {
+    double Nexpected = nloX[i]/loX[i]*137.0e3*X[i]*ST[i]/NT[i];
+    cout << Nexpected/ST[i] <<endl;
+    if(Nexpected/ST[i]>1)
+      cout << "Not enough Events"<< endl;
+    cout << rawEvents[i].size() << endl;
+    for (size_t iEvent = 0; iEvent < rawEvents[i].size(); iEvent++)
+    {
+      if(dist(gen)<Nexpected/ST[i])
+      {
+        events.push_back(rawEvents[i][iEvent]);
+      }
+    }    
+  }  
 }
 
 TF1 *Analysis::fitFunc;
@@ -1597,6 +1552,7 @@ void Analysis::FitCherbyshev(vector<PassedEvent> &events, double &bNorm, vector<
   TCanvas *c1 = new TCanvas("c1FitCherbyshev", "c1");
   c1->cd();
   TH1F *h1 = new TH1F("h1", "", 20, 40.0, 140.0);
+  
   for (size_t i = 0; i < events.size(); i++)
   {
     if (events[i].mj2 < 70.0 || events[i].mj2 > 100.0 || events[i].status >= 10)
@@ -1609,13 +1565,23 @@ void Analysis::FitCherbyshev(vector<PassedEvent> &events, double &bNorm, vector<
     string polyName = "chebyshev" + to_string(n);
     fitFunc = (TF1 *)gROOT->GetFunction(polyName.c_str());
     TF1 *backGroundFit = new TF1(("Fit" + polyName).c_str(), excludeSignalRegion, 40, 140, fitFunc->GetNpar());
+    for (size_t iPar = 0; iPar < fitFunc->GetNpar(); iPar++)
+    {
+      backGroundFit->SetParameter(iPar,1.0);
+    }
+    
+    cout << "++++++++++++++"<< endl;
+    cout << polyName << endl;
     h1->Fit(backGroundFit, "IQ");
     yield.push_back(fitFunc->Integral(70, 100) / 5);
     if (n == 1)
     {
-      h1->Draw();
+      h1->Draw("E");
+      h1->GetYaxis()->SetRangeUser(0,150);
       params.push_back(backGroundFit->GetParameter(0));
       params.push_back(backGroundFit->GetParameter(1));
+      params.push_back(backGroundFit->GetParError(0));
+      params.push_back(backGroundFit->GetParError(1));
       c1->SaveAs("Plots/Ch1.eps");
       TH1F *pseudoyield = new TH1F("pseudoExperiments", "", 100, yield[0] - 100, yield[0] + 100);
       int nPseudo = 1000;
@@ -1637,7 +1603,7 @@ void Analysis::FitCherbyshev(vector<PassedEvent> &events, double &bNorm, vector<
     }
   }
   bNorm = yield[0];
-  for (int i = 1; i < 4; i++)
+  for (int i = 0; i < 4; i++)
   {
     sysError = max(sysError, abs(yield[0] - yield[i]));
   }
@@ -1662,12 +1628,12 @@ void Analysis::CalcTransferFactor(vector<PassedEvent> &events, double &bNorm, ve
   cout << histCR->GetBinContent(1) << endl;
   histCR->Draw();
   transferFactor = bNorm / histCR->Integral();
-  bi.push_back(transferFactor * histCR->GetBinContent(1));
-  bi.push_back(transferFactor * histCR->GetBinContent(2));
-  bi.push_back(transferFactor * histCR->GetBinContent(3));
-  bi.push_back(transferFactor * histCR->GetBinContent(4));
-  bi.push_back(transferFactor * histCR->GetBinContent(5));
-  bi.push_back(transferFactor * histCR->GetBinContent(6));
+  bi.push_back(histCR->GetBinContent(1));
+  bi.push_back( histCR->GetBinContent(2));
+  bi.push_back( histCR->GetBinContent(3));
+  bi.push_back( histCR->GetBinContent(4));
+  bi.push_back( histCR->GetBinContent(5));
+  bi.push_back( histCR->GetBinContent(6));
 
-  c1->SaveAs("Plots/CR.eps");
+//  c1->SaveAs("Plots/CR.eps");
 }

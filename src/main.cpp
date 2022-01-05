@@ -10,77 +10,104 @@
 #include "ExRootAnalysis/ExRootResult.h"
 #include "ExRootAnalysis/ExRootUtilities.h"
 #include <iostream>
+#include "TROOT.h"
 #include <omp.h>
 #include <unistd.h>
+#include <TLegend.h>
 
 #include <vector>
 using namespace std;
 
-int main()
+void TestNorm()
 {
-  
-  
-  cout<<Analysis::FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ZNorm-Cluster/ROOTFILES.txt")/Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/Z/ROOTFILES.txt");
-  //cout<<Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/Z/ROOTFILES.txt");
-  return 0;
-  /*
-  return 0;///Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/PythiaDelphesCards/q70.txt")<<endl;
-  cout<<Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/PythiaDelphesCards/Norm25.txt")/Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/PythiaDelphesCards/q90.txt")<<endl;
-  cout<<Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/PythiaDelphesCards/Norm25.txt")/Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/PythiaDelphesCards/ZXQ50.txt")<<endl;
-  return 0;*/
-  //Analysis::FindNormalisation("/home/gerrit/Documents/tmp/DelphesEventsIso/ROOTFILES.txt");
-  //cout<<Analysis::FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ZNorm-Cluster/ROOTFILES.txt")/Analysis::FindNormalisation("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt")<<endl;
-  //cout<<"Ideal : 0.002"<<endl;
-  //return 0;
-
-  //cpu_timer timers;
-  
-  int i = 0;
-  vector<PassedEvent> events;
-  //RootIO::ReadEvents("Normtest.root", events);
-  vector<string> smallFiles={"/home/gerrit/Documents/tmp/Z-ClusterSmall/ROOTFILES.txt","/home/gerrit/Documents/tmp/Z-ClusterNormSmall/ROOTFILES.txt"};
-  vector<string> filename = {"/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/Z-Cluster/ROOTFILES.txt", "/media/gerrit/Files/DelphesEvents/W-Cluster/ROOTFILES.txt", "/media/gerrit/Files/DelphesEvents/tt-Cluster/ROOTFILES.txt"};
-  filename.push_back("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ZNorm-Cluster/ROOTFILES.txt");
-  filename.push_back("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/WNorm-Cluster/ROOTFILES.txt");
-  filename.push_back("/mnt/5c451946-c244-49ab-9fc5-1aaca8739b2a/ttNorm-Cluster/ROOTFILES.txt");
-  filename.push_back("/home/gerrit/Documents/tmp/DelphesEventsIso/ROOTFILES.txt");
-  filename.push_back("/media/gerrit/Files/DelphesEvents/PythiaDelphesCards/HT200.txt");
-  filename.push_back("/media/gerrit/Files/DelphesEvents/Z/ROOTFILES.txt");
-  for (i = 8; i < 9; i++)
-  {
-    vector<string> rootfiles;
-    rootfiles.clear();
-    RootIO::GetRootFilePath(filename[i].c_str(), rootfiles, 40);
-    TChain chain("Delphes");
-    cout << "Analyse all Events in " << filename[i] << endl;
-    for (size_t i = 0; i < rootfiles.size(); i++)
-    {
-      chain.Add(rootfiles[i].c_str());
-    }
-
-    ExRootTreeReader *reader = new ExRootTreeReader(&chain);
-    Analysis::AnalyseEventsNew(reader, events, -1, i);
-    cout << events.size() << endl;
-    //RootIO::SaveEvents("Normtest2.root", events);
-  }
-  events.clear();
-  return 0;
-  RootIO::ReadEvents("Normtest.root", events);
-  TCanvas *c1 = new TCanvas("cLepPhoVal", "c1");
+  TCanvas *c1 = new TCanvas("c1Trans", "c1");
   c1->cd();
-  gPad->SetLogy();
-  TH1D *hist = new TH1D("ptmiss", "pt", 20, 100, 300);
-  for (i = 0; i < events.size(); i++)
+  TH1F *hist = new TH1F("ht", "ht", 10, 0, 1000);
+  TH1F *histNorm = new TH1F("htNorm", "ht", 10, 0, 1000);
+  vector<double> metZ, metZNorm;
+  Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/W/ROOTFILES.txt", 10, metZ);
+  Analysis::FindNormalisation("/media/gerrit/Files/DelphesEvents/WNorm/ROOTFILES.txt", 100, metZNorm);
+  for (size_t i = 0; i < metZ.size(); i++)
   {
-    hist->Fill(events[i].ptmiss);
+    hist->Fill(metZ[i]);
   }
-  
-  TF1 *f1 = (TF1 *)gROOT->GetFunction("expo");
-  hist->Fit(f1);
-  cout << f1->Eval(300)<<endl;
+  for (size_t i = 0; i < metZNorm.size(); i++)
+  {
+    histNorm->Fill(metZNorm[i]);
+    /* code */
+  }
+  hist->Scale(1.0 / hist->Integral());
+  histNorm->Scale(1.0 / histNorm->Integral());
+  gPad->SetLogy();
+  hist->SetLineColor(kRed);
   hist->Draw();
-  c1->SaveAs("ptmisssssss.eps");
-  //cout << timer.format()<<endl;
+  histNorm->SetLineColor(kGreen);
+  histNorm->Draw("SAME");
+  auto legend = new TLegend(0.33, 0.80, 0.48, 0.9);
+  legend->AddEntry(hist, "W");
+  legend->AddEntry(histNorm, "WNorm");
+  legend->Draw();
+  c1->SaveAs("METCompareWMetMin.eps");
+  gPad->SetLogy(0);
+  gPad->SetGrid();
+  hist->Sumw2();
+  histNorm->Sumw2();
+  hist->Divide(histNorm);
+  hist->Draw();
+  c1->SaveAs("DifferencesWMetMin.eps");
+}
+
+void ReadFilenames(const char *filename, vector<string> &FilePaths)
+{
+  std::ifstream file(filename);
+  if (file.is_open())
+  {
+    std::string line;
+    while (std::getline(file, line))
+    {
+      FilePaths.push_back(line);
+    }
+    file.close();
+  }
+}
+void test()
+{
+  vector<string> paths;
+  RootIO::GetRootFilePath("/media/gerrit/Files/RootFiles/A/ROOTFILES.txt",paths,-1);
+  vector<PassedEvent> events;
+  int total=0;
+  int inFile;
+  for (size_t i = 0; i < paths.size(); i++)
+  {
+      RootIO::ReadEvents(paths[i].c_str(),events,0,inFile);
+      total+=inFile;
+  }
+  cout << total << endl;
+  RootIO::SaveEvents("/media/gerrit/Files/RootFiles/A/root.root",events,1);
+  events.clear();
+  RootIO::ReadEvents("/media/gerrit/Files/RootFiles/A/root.root",events,1);
+  events.clear();
+  RootIO::ReadEvents("RootFiles/A-Total.root",events,1);
+  
+}
+
+int main(int argc, char **argv)
+{
+  vector<PassedEvent> events;
+  Analysis::SampleFromEvents(events);
+  Plots::PlotPTShape(events);
+  //return 0;
+  Plots::PlotPTMiss(events);
+
+  vector<double> params;
+  double bNorm, transferFactor;
+  vector<double> bi;
+  Analysis::FitCherbyshev(events, bNorm, params);
+  Analysis::CalcTransferFactor(events, bNorm, bi, transferFactor);
+  Plots::PlotMJ1(events, params);
+  Plots::PlotSignalRegion(events, bi, transferFactor);
+  Plots::PlotPhotonLeptonValidation(events);
+  //Plot1(events);
   return 0;
   //RootIO::SaveEvents("Alltt.root",events);
   // Plots::PlotAll();
@@ -155,20 +182,6 @@ int main()
   //cout << 0.00438544 << endl;
   //return 0;
   
-  vector<PassedEvent> events;
-  RootIO::ReadEvents("Normtest.root",events);
-  Plots::PlotPTShape(events);
-  //return 0;
-  Plots::PlotPTMiss(events);
-  
-  vector<double> params;
-  double bNorm,transferFactor;
-  vector<double> bi;
-  Analysis::FitCherbyshev(events,bNorm, params);
-  Analysis::CalcTransferFactor(events,bNorm,bi,transferFactor);
-  Plots::PlotMJ1(events,params);
-  Plots::PlotSignalRegion(events,bi);
-  Plots::PlotPhotonLeptonValidation(events);
-  //Plot1(events);  
+
   */
 }

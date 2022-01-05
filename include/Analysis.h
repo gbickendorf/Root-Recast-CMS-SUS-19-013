@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <numeric>
+#include <random>
 
 #include "PassedEvent.h"
 #include "RootIO.h"
@@ -40,7 +41,9 @@ class Analysis {
         static void AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents);
         static void AnalyseEvents2(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents, int status);
         static double FindNormalisation(const char * filename);
-        static void RunBigAnalysis();
+        static double FindNormalisation(const char * filename, int nFiles);
+        static double FindNormalisation(const char * filename, int nFiles, vector<double> &mets);
+        static void SampleFromEvents(vector<PassedEvent> &events);
         static void FitCherbyshev(vector<PassedEvent> &events ,double &bNorm,vector<double> &params);
         static void CalcTransferFactor(vector<PassedEvent> &events,double &bNorm,vector<double> &bi, double &transferFactor);
 };

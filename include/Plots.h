@@ -9,6 +9,8 @@
 #include <TLegend.h>
 #include <TH2D.h>
 #include <TF1.h>
+#include <TRatioPlot.h>
+#include <TGraphErrors.h>
 
 #include<RootIO.h>
 #include<Analysis.h>
@@ -19,6 +21,6 @@ class Plots {
         static void PlotPTMiss(vector<PassedEvent> events);
         static void PlotMJ1(vector<PassedEvent> events,vector<double> params);
         static void PlotPTShape(vector<PassedEvent> events);
-        static void PlotSignalRegion(vector<PassedEvent> events,vector<double> &bi);
+        static void PlotSignalRegion(vector<PassedEvent> events, vector<double> bi, double transferFactor);
         static void PlotPhotonLeptonValidation(vector<PassedEvent> events);
 };

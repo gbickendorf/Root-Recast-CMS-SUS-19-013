@@ -139,10 +139,6 @@
 				},
 				{
 					"backtrace" : 5,
-					"fragment" : "-llibPhysics"
-				},
-				{
-					"backtrace" : 5,
 					"fragment" : "-I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis"
 				},
 				{
@@ -302,6 +298,14 @@
 				"role" : "libraries"
 			},
 			{
+				"fragment" : "-L/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_2_0/ExRootAnalysis",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lExRootAnalysis",
+				"role" : "libraries"
+			},
+			{
 				"fragment" : "-lMathCore",
 				"role" : "libraries"
 			},
@@ -327,6 +331,10 @@
 			},
 			{
 				"fragment" : "-lDelphes",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lExRootAnalysis",
 				"role" : "libraries"
 			}
 		],

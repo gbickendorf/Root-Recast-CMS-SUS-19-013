@@ -1,66 +1,101 @@
 #include "RootIO.h"
 
-void RootIO::SaveEvents(const char * filename,vector<PassedEvent> events)
+void RootIO::SaveEvents(const char *filename, vector<PassedEvent> events, int verbose)
 {
-  cout<<"Writing "<< events.size()<<" Events "<<endl;
-  TFile f(filename,"RECREATE");
+  if(verbose)
+    cout << "Writing " << events.size() << " Events " << endl;
+  TFile f(filename, "RECREATE");
   TVectorD mj1(events.size());
   TVectorD mj2(events.size());
   TVectorD ptmiss(events.size());
   TVectorD status(events.size());
   for (size_t i = 0; i < events.size(); i++)
   {
-    mj1[i]=events[i].mj1;
-    mj2[i]=events[i].mj2;
-    ptmiss[i]=events[i].ptmiss;
-    status[i]=1.0*events[i].status;
+    mj1[i] = events[i].mj1;
+    mj2[i] = events[i].mj2;
+    ptmiss[i] = events[i].ptmiss;
+    status[i] = 1.0 * events[i].status;
   }
-  mj1.Write("mj1",TObject::kOverwrite);
-  mj2.Write("mj2",TObject::kOverwrite);
-  ptmiss.Write("ptmiss",TObject::kOverwrite);
-  status.Write("status",TObject::kOverwrite);
+  mj1.Write("mj1", TObject::kOverwrite);
+  mj2.Write("mj2", TObject::kOverwrite);
+  ptmiss.Write("ptmiss", TObject::kOverwrite);
+  status.Write("status", TObject::kOverwrite);
   f.Close();
 }
 
-void RootIO::SaveEvents(vector<PassedEvent> events)
+void RootIO::SaveEvents(const char *filename, vector<PassedEvent> events)
 {
-  RootIO::SaveEvents("Analysis100percentNew.root",events);
+  RootIO::SaveEvents(filename, events, 0);
 }
 
-void RootIO::ReadEvents(const char * filename,vector<PassedEvent> &events)
+void RootIO::ReadEvents(const char * filename, vector<PassedEvent> &events, int verbose, int &nTotal)
 {
   TFile f(filename);
-  TVectorD *mj1 = (TVectorD*)f.Get("mj1");
-  TVectorD *mj2 = (TVectorD*)f.Get("mj2");
-  TVectorD *ptmiss = (TVectorD*)f.Get("ptmiss");
-  TVectorD *status = (TVectorD*)f.Get("status");
+  TVectorD *mj1 = (TVectorD *)f.Get("mj1");
+  TVectorD *mj2 = (TVectorD *)f.Get("mj2");
+  TVectorD *ptmiss = (TVectorD *)f.Get("ptmiss");
+  TVectorD *status = (TVectorD *)f.Get("status");
+  TVectorD *rawEvents=(TVectorD *)f.Get("nRawEvents");
   vector<int> diff;
   for (size_t i = 0; i < mj1->GetNoElements(); i++)
   {
     //mj1[0][0].Print();
-    events.push_back(PassedEvent(mj1[0][i],mj2[0][i],ptmiss[0][i],(Int_t)status[0][i]));
-    while(diff.size()<(Int_t)status[0][i]+1)
+    events.push_back(PassedEvent(mj1[0][i], mj2[0][i], ptmiss[0][i], (Int_t)status[0][i]));
+    while (diff.size() < (Int_t)status[0][i] + 1)
     {
       diff.push_back(0);
     }
     diff[(Int_t)status[0][i]]++;
   }
-  cout << "Read "<< mj1->GetNoElements()<<" events"<<endl;
-  for (size_t i = 0; i < diff.size(); i++)
+  if (verbose)
   {
-    cout << "Status "<<i<<" "<<diff[i]<<endl;
+    cout << "Read " << mj1->GetNoElements() << " events" << endl;
+    for (size_t i = 0; i < diff.size(); i++)
+    {
+      cout << "Status " << i << " " << diff[i] << endl;
+    }
   }
-  
+
   f.Close();
-  
+  nTotal=(int)rawEvents[0][0];
 }
 
-void RootIO::ReadEvents(vector<PassedEvent> &events)
+void RootIO::ReadEvents(const char *filename, vector<PassedEvent> &events, int verbose)
 {
-  RootIO::ReadEvents("Analysis100percent.root",events);  
+  TFile f(filename);
+  TVectorD *mj1 = (TVectorD *)f.Get("mj1");
+  TVectorD *mj2 = (TVectorD *)f.Get("mj2");
+  TVectorD *ptmiss = (TVectorD *)f.Get("ptmiss");
+  TVectorD *status = (TVectorD *)f.Get("status");
+  vector<int> diff;
+  for (size_t i = 0; i < mj1->GetNoElements(); i++)
+  {
+    //mj1[0][0].Print();
+    events.push_back(PassedEvent(mj1[0][i], mj2[0][i], ptmiss[0][i], (Int_t)status[0][i]));
+    while (diff.size() < (Int_t)status[0][i] + 1)
+    {
+      diff.push_back(0);
+    }
+    diff[(Int_t)status[0][i]]++;
+  }
+  if (verbose)
+  {
+    cout << "Read " << mj1->GetNoElements() << " events" << endl;
+    for (size_t i = 0; i < diff.size(); i++)
+    {
+      cout << "Status " << i << " " << diff[i] << endl;
+    }
+  }
+
+  f.Close();
 }
 
-void RootIO::GetRootFilePath(const char * filename,vector<string> &rootFilePaths, int nFiles)
+void RootIO::ReadEvents(const char *filename, vector<PassedEvent> &events)
+{
+  RootIO::ReadEvents(filename, events, 0);
+}
+
+void RootIO::GetRootFilePath(const char *filename, vector<string> &rootFilePaths, int nFiles)
 {
   std::ifstream file(filename);
   if (file.is_open())
@@ -69,17 +104,17 @@ void RootIO::GetRootFilePath(const char * filename,vector<string> &rootFilePaths
     while (std::getline(file, line))
     {
       rootFilePaths.push_back(line);
-      if(--nFiles==0 )
+      if (--nFiles == 0)
         break;
     }
     file.close();
   }
 }
 
-void RootIO::GetRootFiles(const char * filename,TChain &chain, int nFiles)
+void RootIO::GetRootFiles(const char *filename, TChain &chain, int nFiles)
 {
   vector<string> rootFilePaths;
-  RootIO::GetRootFilePath(filename,rootFilePaths,nFiles);
+  RootIO::GetRootFilePath(filename, rootFilePaths, nFiles);
   std::reverse(rootFilePaths.begin(), rootFilePaths.end());
   for (size_t i = 0; i < rootFilePaths.size(); i++)
   {
@@ -87,8 +122,7 @@ void RootIO::GetRootFiles(const char * filename,TChain &chain, int nFiles)
   }
 }
 
-void RootIO::GetRootFiles(const char * filename,TChain &chain)
+void RootIO::GetRootFiles(const char *filename, TChain &chain)
 {
-  GetRootFiles(filename,chain, -1);
+  GetRootFiles(filename, chain, -1);
 }
-
