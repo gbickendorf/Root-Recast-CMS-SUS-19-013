@@ -19,9 +19,15 @@ CMakeFiles/main.dir/src/RootIO.cpp.o: src/RootIO.cpp
 CMakeFiles/main.dir/src/RootIO.cpp.o: include/PassedEvent.h
 CMakeFiles/main.dir/src/RootIO.cpp.o: include/RootIO.h
 
+CMakeFiles/main.dir/src/Stats.cpp.o: src/Stats.cpp
+CMakeFiles/main.dir/src/Stats.cpp.o: include/PassedEvent.h
+CMakeFiles/main.dir/src/Stats.cpp.o: include/RootIO.h
+CMakeFiles/main.dir/src/Stats.cpp.o: include/Stats.h
+
 CMakeFiles/main.dir/src/main.cpp.o: src/main.cpp
 CMakeFiles/main.dir/src/main.cpp.o: include/Analysis.h
 CMakeFiles/main.dir/src/main.cpp.o: include/PassedEvent.h
 CMakeFiles/main.dir/src/main.cpp.o: include/Plots.h
 CMakeFiles/main.dir/src/main.cpp.o: include/RootIO.h
+CMakeFiles/main.dir/src/main.cpp.o: include/Stats.h
 

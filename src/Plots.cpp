@@ -62,7 +62,8 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
     TFile *file = new TFile("Analysis.root", "UPDATE");
     histMetW->Write("histMetW", TObject::kOverwrite);
     histMetZ->Write("histMetZ", TObject::kOverwrite);
-    hs->Write("hs", TObject::kOverwrite);
+    histMettt->Write("histMettt", TObject::kOverwrite);
+    hs->Write("hsMet", TObject::kOverwrite);
     file->Close();
     delete file;
 }
@@ -133,14 +134,14 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     c1->SaveAs("Plots/MJ1.eps");
 }
 
-void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> bi, double transferFactor)
+void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, double transferFactor,double transferFactorErr)
 {
     const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
     TH1 *histSR = new TH1F("SignalRegion", "SR", 6, bins);
     TH1 *histBG = new TH1F("BackGround", "BG", 6, bins);
     for (int i = 0; i < 6; i++)
     {
-        histBG->SetBinContent(i + 1, bi[i] * transferFactor);
+        histBG->SetBinContent(i + 1, NCRi[i] * transferFactor);
         /* code */
     }
     TCanvas *c1 = new TCanvas("cSRPlot", "c1");
@@ -334,15 +335,16 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
 void Plots::PlotAll()
 {
     vector<PassedEvent> events;
-    double transferfactor, bNorm;
-    vector<double> B_i, params;
+    double transferfactor,transferfactorErr, bNorm,bNormErr;
+    vector<double> NCRi, params;
 
     RootIO::ReadEvents("Normtest.root", events);
     Plots::PlotPTMiss(events);
-    Analysis::FitCherbyshev(events, bNorm, params);
-    Analysis::CalcTransferFactor(events, bNorm, B_i, transferfactor);
+    Analysis::FitCherbyshev(events, bNorm,bNormErr, params);
+    Analysis::CalcTransferFactor(events, bNorm,bNormErr, NCRi, transferfactor,transferfactorErr);
+    
     Plots::PlotMJ1(events, params);
-    Plots::PlotSignalRegion(events, B_i, transferfactor);
+    Plots::PlotSignalRegion(events, NCRi, transferfactor,transferfactorErr);
     Plots::PlotPTMiss(events);
     Plots::PlotPhotonLeptonValidation(events);
 }

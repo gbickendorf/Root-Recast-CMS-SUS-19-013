@@ -231,6 +231,33 @@ src/RootIO.cpp.s:
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/RootIO.cpp.s
 .PHONY : src/RootIO.cpp.s
 
+src/Stats.o: src/Stats.cpp.o
+
+.PHONY : src/Stats.o
+
+# target to build an object file
+src/Stats.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Stats.cpp.o
+.PHONY : src/Stats.cpp.o
+
+src/Stats.i: src/Stats.cpp.i
+
+.PHONY : src/Stats.i
+
+# target to preprocess a source file
+src/Stats.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Stats.cpp.i
+.PHONY : src/Stats.cpp.i
+
+src/Stats.s: src/Stats.cpp.s
+
+.PHONY : src/Stats.s
+
+# target to generate assembly for a file
+src/Stats.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/Stats.cpp.s
+.PHONY : src/Stats.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -279,6 +306,9 @@ help:
 	@echo "... src/RootIO.o"
 	@echo "... src/RootIO.i"
 	@echo "... src/RootIO.s"
+	@echo "... src/Stats.o"
+	@echo "... src/Stats.i"
+	@echo "... src/Stats.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

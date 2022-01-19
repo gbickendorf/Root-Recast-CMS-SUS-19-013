@@ -21,6 +21,6 @@ class Plots {
         static void PlotPTMiss(vector<PassedEvent> events);
         static void PlotMJ1(vector<PassedEvent> events,vector<double> params);
         static void PlotPTShape(vector<PassedEvent> events);
-        static void PlotSignalRegion(vector<PassedEvent> events, vector<double> bi, double transferFactor);
+        static void PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, double transferFactor, double transferFactorErr);
         static void PlotPhotonLeptonValidation(vector<PassedEvent> events);
 };

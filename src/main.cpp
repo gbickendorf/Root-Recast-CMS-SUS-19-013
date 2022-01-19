@@ -2,6 +2,7 @@
 #include "RootIO.h"
 #include "Plots.h"
 #include "Analysis.h"
+#include "Stats.h"
 
 #include "ExRootAnalysis/ExRootClasses.h"
 #include "ExRootAnalysis/ExRootTreeReader.h"
@@ -14,8 +15,14 @@
 #include <omp.h>
 #include <unistd.h>
 #include <TLegend.h>
-
 #include <vector>
+
+//#include <RooHist.h>
+//#include <RooDataSet.h>
+//#include <RooPlot.h>
+
+
+
 using namespace std;
 
 void TestNorm()
@@ -91,22 +98,106 @@ void test()
   
 }
 
+void ReadGluino()
+{
+  TCanvas *c1 = new TCanvas("c1Trans", "c1");
+  c1->cd();
+  gPad->SetLogy();
+  c1->SetGrid();
+  TChain chain("Delphes");
+  chain.Add("/media/gerrit/Files/RootFiles/Gluino/1700GeV.root");
+  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
+  vector<PassedEvent> events;
+  int nTotal;
+  double acceptance=Analysis::AnalyseEvents(treeReader,events,-1,100);
+  const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 20000.0};
+  TH1 *histSignal = new TH1F("histSignal", "ptmiss CR", 6, bins);
+  for (size_t i = 0; i < events.size(); i++)
+  {
+    histSignal->Fill(events[i].ptmiss);
+    /* code */
+  }
+  histSignal->Scale(Analysis::TheoryXSection(1700.0)*137e3*acceptance/histSignal->Integral());
+  histSignal->Draw();
+  FILE *pFile = fopen("Signal.csv","w");
+  fprintf(pFile,"Signal,stat\n");
+  TVectorD binC(6);
+  TVectorD binErr(6);
+  for (size_t i = 1; i < 7; i++)
+  {
+    binC[i-1]=histSignal->GetBinContent(i);
+    binErr[i-1]=histSignal->GetBinError(i);
+    cout << histSignal->GetBinCenter(i)<< "   " << histSignal->GetBinContent(i)<< " +- "<< histSignal->GetBinError(i)<< endl;
+    fprintf(pFile,"%E,%E\n",histSignal->GetBinContent(i),histSignal->GetBinError(i));
+    /* code */
+  }
+  fclose(pFile);
+  
+  c1->SaveAs("Signal.eps");
+  TFile f("FinalSamples.root","update");
+  binC.Write("SigBins");
+  binErr.Write("SigErr");
+  f.Close();
+}
+
+
+
 int main(int argc, char **argv)
 {
-  vector<PassedEvent> events;
+  Stats::Test();
+  return 0;
+  //cout << Analysis::TheoryXSection(1700) << endl;
+  ReadGluino();
+  vector<PassedEvent> events,SREvents;
   Analysis::SampleFromEvents(events);
   Plots::PlotPTShape(events);
   //return 0;
   Plots::PlotPTMiss(events);
 
   vector<double> params;
-  double bNorm, transferFactor;
-  vector<double> bi;
-  Analysis::FitCherbyshev(events, bNorm, params);
-  Analysis::CalcTransferFactor(events, bNorm, bi, transferFactor);
+  double bNorm, transferFactor, bNormErr,transferFactorErr;
+  vector<double> NCRi,SRBinContent;
+  Analysis::FitCherbyshev(events, bNorm, bNormErr, params);
+  Analysis::CalcTransferFactor(events, bNorm,bNormErr, NCRi, transferFactor,transferFactorErr);
   Plots::PlotMJ1(events, params);
-  Plots::PlotSignalRegion(events, bi, transferFactor);
+  Plots::PlotSignalRegion(events, NCRi, transferFactor,transferFactorErr);
   Plots::PlotPhotonLeptonValidation(events);
+  FILE *pFile = fopen("BackgroundEstimate.csv","w");
+  fprintf(pFile,"BG,stat,sys\n");
+
+  TVectorD vNCRi(6);
+  TVectorD vSRBin(6);
+  TVectorD vtransferFactor(2);
+
+  vtransferFactor[0]=transferFactor;
+  vtransferFactor[1]=transferFactorErr;
+
+  for (size_t i = 0; i < NCRi.size(); i++)
+  {
+    vNCRi[i]=NCRi[i];
+    fprintf(pFile,"%E,%E,%E\n",NCRi[i]*transferFactor,sqrt(NCRi[i])*transferFactor,NCRi[i]*transferFactorErr);
+    /* code */
+  }
+  fclose(pFile);
+  
+
+  Analysis::GetEventsInSignalRegion(events,SREvents);
+  Analysis::GetSRBinContent(SREvents,SRBinContent);
+  pFile = fopen("Data.csv","w");
+  fprintf(pFile,"Data,stat\n");
+  for (size_t i = 0; i < SRBinContent.size(); i++)
+  {
+    vSRBin[i]=SRBinContent[i];
+    fprintf(pFile,"%E,%E\n",SRBinContent[i],sqrt(SRBinContent[i]));
+    /* code */
+  }
+  fclose(pFile);
+  TFile f("FinalSamples.root","update");
+  vNCRi.Write("NCR_i");
+  vSRBin.Write("DataBins");
+  vtransferFactor.Write("TransferFac");
+  f.Close();
+  Stats::Test();
   //Plot1(events);
   return 0;
   //RootIO::SaveEvents("Alltt.root",events);
