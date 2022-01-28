@@ -17,6 +17,7 @@
 #include <TLegend.h>
 #include <vector>
 
+
 //#include <RooHist.h>
 //#include <RooDataSet.h>
 //#include <RooPlot.h>
@@ -142,10 +143,12 @@ void ReadGluino()
 
 
 
+
 int main(int argc, char **argv)
 {
-  Stats::Test();
-  return 0;
+
+  //Stats::Test();
+  //return 0;
   //cout << Analysis::TheoryXSection(1700) << endl;
   ReadGluino();
   vector<PassedEvent> events,SREvents;
@@ -197,9 +200,9 @@ int main(int argc, char **argv)
   vSRBin.Write("DataBins");
   vtransferFactor.Write("TransferFac");
   f.Close();
-  Stats::Test();
+  //Stats::Test();
   //Plot1(events);
-  return 0;
+  //return 0;
   //RootIO::SaveEvents("Alltt.root",events);
   // Plots::PlotAll();
   //Analysis::RunBigAnalysis();

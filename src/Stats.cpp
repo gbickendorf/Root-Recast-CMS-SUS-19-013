@@ -16,7 +16,7 @@ double Stats::LogLikelihood(LogLikelihoodParams *par)
   double logLikelihood = 0.0;
   for (size_t i = 0; i < 6; i++)
   {
-    logLikelihood += LnPoisson(par->data[i], par->CRi[i] * par->transferFac);
+    logLikelihood += LnPoisson(par->data[i], par->CRi[i] * par->transferFac+par->signal[i]*par->signalStrength);
     logLikelihood += LnLogNormal(par->CRi[i], par->CRi_expected[i], 1.0 + par->CRiErr_expected[i] / par->CRi_expected[i]);
   }
   logLikelihood += LnLogNormal(par->transferFac, par->transferFac_expected, 1.0 + par->transferFacErr_expected / par->transferFac_expected);
@@ -141,7 +141,7 @@ double Stats::LogLikelihoodMax(LogLikelihoodParams &par, double mu_min, double m
     gsl_vector_set(ss, i, par.CRiErr_expected[i]);
   }
   gsl_vector_set(ss, 6, par.transferFacErr_expected);
-  gsl_vector_set(ss, 7, (mu_min + mu_max) / 20.0);
+  gsl_vector_set(ss, 7, 1.0);
 
   /* Initialize method and iterate */
   minex_func.n = 8;
@@ -159,7 +159,7 @@ double Stats::LogLikelihoodMax(LogLikelihoodParams &par, double mu_min, double m
       break;
 
     size = gsl_multimin_fminimizer_size(s);
-    status = gsl_multimin_test_size(size, 1e-6);
+    status = gsl_multimin_test_size(size, 1e-7);
 
     if (status == GSL_SUCCESS && verbose)
     {
@@ -188,7 +188,7 @@ double Stats::LogLikelihoodMax(LogLikelihoodParams &par, double mu_min, double m
   if (par.signalStrength < mu_min)
     return Stats::LogLikelihoodMax(par, mu_min, verbose);
   if (par.signalStrength > mu_max)
-    return Stats::LogLikelihoodMax(par, mu_min, verbose);
+    return Stats::LogLikelihoodMax(par, mu_max, verbose);
   return -res;
 }
 
@@ -219,15 +219,15 @@ void Stats::ReadParameters(LogLikelihoodParams &par)
   par.CRi = vector<double>(6);
   par.data = data;
   par.signal = signal;
-  par.signalStrength = 1;
+  par.signalStrength = 1.0;
   par.mode = 0;
 }
 
 void Stats::Test()
 {
-  double mu_test = 100.1;
+  double mu_test = 0.1;
   size_t Asimov_bg = 100;
-  size_t Asimov_sig = 100;
+  size_t Asimov_sig = 10;
 
   LogLikelihoodParams par, par_obs_0, par_obs_mu, par_pseudo;
   Stats::ReadParameters(par);
@@ -235,6 +235,7 @@ void Stats::Test()
   {
     cout << par.data[i] << "  " << par.CRi_expected[i]*par.transferFac_expected<< endl;
   }
+  cout << endl;
   
   par_obs_mu = par;
   par_obs_0 = par;
@@ -249,6 +250,7 @@ void Stats::Test()
     bgDist.emplace_back(par_obs_0.CRi[i] * par_obs_0.transferFac);
     sigDist.emplace_back(par_obs_mu.CRi[i] * par_obs_mu.transferFac + mu_test * par_obs_mu.signal[i]);
   }
+  //return;
   int totalBG = 0;
   int totalSig = 0;
   int acceptedBG = 0;
@@ -263,6 +265,7 @@ void Stats::Test()
     }
     q_mu = -2.0 * (Stats::LogLikelihoodMax(par_pseudo, mu_test, 0) - Stats::LogLikelihoodMax(par_pseudo, 0.0, mu_test, 0));
     totalBG++;
+    cout << totalBG << endl;
     //cout<<q_mu<<endl;
     if (q_mu > q_obs_mu)
       acceptedBG++;

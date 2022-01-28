@@ -1527,7 +1527,7 @@ void Analysis::SampleFromEvents(vector<PassedEvent> &events)
   RootIO::ReadEvents("RootFiles/tt-Total.root",rawEvents[2],0);
   RootIO::ReadEvents("RootFiles/A-Total.root",rawEvents[3]);
   random_device rd;
-  mt19937_64 gen(10); //0
+  mt19937_64 gen(rd()); //0
   uniform_real_distribution<double> dist(0.0,1.0);
   for (size_t i = 0; i < 4; i++)
   {
