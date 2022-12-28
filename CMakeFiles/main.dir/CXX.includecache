@@ -10,9 +10,9 @@
 Analysis.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Analysis.h
 
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Stats.cpp
-Stats.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Stats.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Plots.cpp
+Plots.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Plots.h
 
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/main.cpp
 PassedEvent.h
@@ -49,48 +49,6 @@ TLegend.h
 -
 vector
 -
-RooWorkspace.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooWorkspace.h
-RooAbsPdf.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooAbsPdf.h
-RooRealVar.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooRealVar.h
-RooDataSet.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooDataSet.h
-RooStats/ModelConfig.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/ModelConfig.h
-RooRandom.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooRandom.h
-RooStats/AsymptoticCalculator.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/AsymptoticCalculator.h
-RooStats/HybridCalculator.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/HybridCalculator.h
-RooStats/FrequentistCalculator.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/FrequentistCalculator.h
-RooStats/ToyMCSampler.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/ToyMCSampler.h
-RooStats/HypoTestPlot.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/HypoTestPlot.h
-RooStats/ModelConfig.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/ModelConfig.h
-RooStats/NumEventsTestStat.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/NumEventsTestStat.h
-RooStats/ProfileLikelihoodTestStat.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/ProfileLikelihoodTestStat.h
-RooStats/SimpleLikelihoodRatioTestStat.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/SimpleLikelihoodRatioTestStat.h
-RooStats/RatioOfProfiledLikelihoodsTestStat.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/RatioOfProfiledLikelihoodsTestStat.h
-RooStats/MaxLikelihoodEstimateTestStat.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/MaxLikelihoodEstimateTestStat.h
-RooStats/NumEventsTestStat.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/NumEventsTestStat.h
-RooStats/HypoTestInverter.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/HypoTestInverter.h
-RooStats/HypoTestInverterResult.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/HypoTestInverterResult.h
-RooStats/HypoTestInverterPlot.h
-/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RooStats/HypoTestInverterPlot.h
 
 include/Analysis.h
 vector
@@ -132,6 +90,12 @@ TF1.h
 TCanvas.h
 -
 TFitResult.h
+-
+TFitResultPtr.h
+-
+TPaveText.h
+-
+TStyle.h
 -
 classes/DelphesClasses.h
 include/classes/DelphesClasses.h
@@ -198,6 +162,12 @@ iostream
 fstream
 -
 algorithm
+-
+TChain.h
+-
+TChainElement.h
+-
+TTreeReader.h
 -
 
 include/Stats.h

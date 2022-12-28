@@ -28,6 +28,37 @@ void RootIO::SaveEvents(const char *filename, vector<PassedEvent> events)
   RootIO::SaveEvents(filename, events, 0);
 }
 
+void RootIO::ReadEventsNewPassedEventDef(const char * filename,vector<PassedEvent> &events,int verbose)
+{
+  TChain *myChain = new TChain("Tree");
+  myChain->Add(filename);
+  TTreeReader myReader(myChain);
+  // TFile f(filename.c_str(), "read");
+  // TTreeReader myReader("Tree", &f);
+  TTreeReaderValue<int> status(myReader, "Status");
+  TTreeReaderValue<double> MET(myReader, "MET");
+  TTreeReaderValue<double> Mj1(myReader, "Mj1");
+  TTreeReaderValue<double> Mj2(myReader, "Mj2");
+  int i = 0;
+  while (myReader.Next())
+  {
+    PassedEvent event;
+    // cout <<*MET<<endl;
+    event.status = *status;
+    event.ptmiss = *MET;
+    event.mj1 = *Mj1;
+    event.mj2 = *Mj2;
+
+    events.push_back(event);
+    // break;
+
+    // cout << (*myVector).size()<<endl;
+  }
+  myReader.Clear();
+  // f.Close();
+  cout << events.size() << endl;
+}
+
 void RootIO::ReadEvents(const char * filename, vector<PassedEvent> &events, int verbose, int &nTotal)
 {
   TFile f(filename);

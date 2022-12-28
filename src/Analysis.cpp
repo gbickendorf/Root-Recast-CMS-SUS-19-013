@@ -14,7 +14,7 @@ double Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEve
   TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
   TClonesArray *branchAK8Jet = treeReader->UseBranch("AK8Jets");
   TClonesArray *branchMET = treeReader->UseBranch("MissingET");
-  
+
   TClonesArray *branchElectrons[7];
   TClonesArray *branchMuons[7];
   double minPT[] = {13000.0, 200.0, 133.0, 100.0, 80.0, 66.0, 57.0, 10.0};
@@ -53,16 +53,16 @@ double Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEve
   Int_t ToggleAllCuts, cutLoop;
   Int_t NCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   Int_t ToggleCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  ToggleCut[0] = 1; //Filter Zero Weight Events
-  ToggleCut[1] = 1; //NJetAK4 >= 2
-  ToggleCut[2] = 1; //PT_miss > 300GeV
-  ToggleCut[3] = 1; //HT > 400 GeV
-  ToggleCut[4] = 1; //Phi(j,HTMiss)>0.5(0.3)
+  ToggleCut[0] = 1; // Filter Zero Weight Events
+  ToggleCut[1] = 1; // NJetAK4 >= 2
+  ToggleCut[2] = 1; // PT_miss > 300GeV
+  ToggleCut[3] = 1; // HT > 400 GeV
+  ToggleCut[4] = 1; // Phi(j,HTMiss)>0.5(0.3)
   ToggleCut[5] = 1; //~isolated Photon, Electron, Muon PT > 10 GeV
-  ToggleCut[6] = 1; //isolated Tracks mt> 100GeV, pt > 10GeV
-  ToggleCut[7] = 1; //2 AK8 Jets PT > 200 GeV
-  ToggleCut[8] = 1; //mJet of 2 AK8 Jets in [10,140]GeV
-  ToggleCut[9] = 1; //AngularSep of AK8 and bTagged
+  ToggleCut[6] = 1; // isolated Tracks mt> 100GeV, pt > 10GeV
+  ToggleCut[7] = 1; // 2 AK8 Jets PT > 200 GeV
+  ToggleCut[8] = 1; // mJet of 2 AK8 Jets in [10,140]GeV
+  ToggleCut[9] = 1; // AngularSep of AK8 and bTagged
   ToggleAllCuts = 0;
   TVector3 HTmiss;
   // allEntries=1000;
@@ -160,10 +160,10 @@ double Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEve
       NCut[4]++;
       continue;
     }
-    
+
     for (i = 0; i < 7; i++)
     {
-      //cout<<branchElectrons[i]->GetEntriesFast()<<"  "<<i<<endl;
+      // cout<<branchElectrons[i]->GetEntriesFast()<<"  "<<i<<endl;
       for (size_t lepIndex = 0; lepIndex < branchElectrons[i]->GetEntriesFast(); lepIndex++)
       {
         electron = (Electron *)branchElectrons[i]->At(lepIndex);
@@ -181,9 +181,9 @@ double Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEve
     for (i = 0; i < branchPhoton->GetEntriesFast(); ++i)
     {
       photon = (Photon *)branchPhoton->At(i);
-      //if (photon->Particles.GetEntriesFast() != 1)
-       // continue;
-      double looseWP=1.3 / photon->PT + 0.005;
+      // if (photon->Particles.GetEntriesFast() != 1)
+      //  continue;
+      double looseWP = 1.3 / photon->PT + 0.005;
       if (photon->PT > 10 && ToggleCut[5] && photon->IsolationVar < 1.3 / photon->PT + 0.005)
       {
         nPho++;
@@ -280,39 +280,38 @@ double Analysis::AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEve
       continue;
     }
 
-    if(MET>200.0 && nLep==1 && cutBTag==0 && nPho==0)
+    if (MET > 200.0 && nLep == 1 && cutBTag == 0 && nPho == 0)
     {
-      event.ptmiss=MET;
-      event.status=10;
+      event.ptmiss = MET;
+      event.status = 10;
       events.push_back(event);
       NCut[5]++;
       continue;
     }
-    if(nLep==0 && nPho==1&& PTPho>200)
+    if (nLep == 0 && nPho == 1 && PTPho > 200)
     {
-      event.ptmiss=PTPho;
-      event.status=11;
+      event.ptmiss = PTPho;
+      event.status = 11;
       events.push_back(event);
       NCut[5]++;
-      if(cutBTag>0 && ToggleCut[9])
+      if (cutBTag > 0 && ToggleCut[9])
         NCut[9]++;
       continue;
     }
-    if(MET<300 && ToggleCut[2])
+    if (MET < 300 && ToggleCut[2])
     {
       continue;
     }
-    if(nLep+nPho >0 &&ToggleCut[5])
+    if (nLep + nPho > 0 && ToggleCut[5])
     {
       NCut[5]++;
       continue;
     }
-    if(cutBTag>0&&ToggleCut[9])
+    if (cutBTag > 0 && ToggleCut[9])
     {
       NCut[9]++;
       continue;
     }
-    
 
     event.ptmiss = MET;
     survived++;
@@ -335,7 +334,7 @@ double Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent>
   TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
   TClonesArray *branchAK8Jet = treeReader->UseBranch("AK8Jets");
   TClonesArray *branchMET = treeReader->UseBranch("MissingET");
-  
+
   TClonesArray *branchElectrons[7];
   TClonesArray *branchMuons[7];
   double minPT[] = {13000.0, 200.0, 133.0, 100.0, 80.0, 66.0, 57.0, 10.0};
@@ -374,16 +373,16 @@ double Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent>
   Int_t ToggleAllCuts, cutLoop;
   Int_t NCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   Int_t ToggleCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  ToggleCut[0] = 1; //Filter Zero Weight Events
-  ToggleCut[1] = 1; //NJetAK4 >= 2
-  ToggleCut[2] = 1; //PT_miss > 300GeV
-  ToggleCut[3] = 1; //HT > 400 GeV
-  ToggleCut[4] = 1; //Phi(j,HTMiss)>0.5(0.3)
+  ToggleCut[0] = 1; // Filter Zero Weight Events
+  ToggleCut[1] = 1; // NJetAK4 >= 2
+  ToggleCut[2] = 1; // PT_miss > 300GeV
+  ToggleCut[3] = 1; // HT > 400 GeV
+  ToggleCut[4] = 1; // Phi(j,HTMiss)>0.5(0.3)
   ToggleCut[5] = 1; //~isolated Photon, Electron, Muon PT > 10 GeV
-  ToggleCut[6] = 1; //isolated Tracks mt> 100GeV, pt > 10GeV
-  ToggleCut[7] = 1; //2 AK8 Jets PT > 200 GeV
-  ToggleCut[8] = 1; //mJet of 2 AK8 Jets in [10,140]GeV
-  ToggleCut[9] = 1; //AngularSep of AK8 and bTagged
+  ToggleCut[6] = 1; // isolated Tracks mt> 100GeV, pt > 10GeV
+  ToggleCut[7] = 1; // 2 AK8 Jets PT > 200 GeV
+  ToggleCut[8] = 1; // mJet of 2 AK8 Jets in [10,140]GeV
+  ToggleCut[9] = 1; // AngularSep of AK8 and bTagged
   ToggleAllCuts = 0;
   TVector3 HTmiss;
   // allEntries=1000;
@@ -481,10 +480,10 @@ double Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent>
       NCut[4]++;
       continue;
     }
-    
+
     for (i = 0; i < 7; i++)
     {
-      //cout<<branchElectrons[i]->GetEntriesFast()<<"  "<<i<<endl;
+      // cout<<branchElectrons[i]->GetEntriesFast()<<"  "<<i<<endl;
       for (size_t lepIndex = 0; lepIndex < branchElectrons[i]->GetEntriesFast(); lepIndex++)
       {
         electron = (Electron *)branchElectrons[i]->At(lepIndex);
@@ -502,9 +501,9 @@ double Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent>
     for (i = 0; i < branchPhoton->GetEntriesFast(); ++i)
     {
       photon = (Photon *)branchPhoton->At(i);
-      //if (photon->Particles.GetEntriesFast() != 1)
-       // continue;
-      double looseWP=1.3 / photon->PT + 0.005;
+      // if (photon->Particles.GetEntriesFast() != 1)
+      //  continue;
+      double looseWP = 1.3 / photon->PT + 0.005;
       if (photon->PT > 10 && ToggleCut[5] && photon->IsolationVar < looseWP)
       {
         nPho++;
@@ -574,7 +573,7 @@ double Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent>
       NCut[8]++;
       continue;
     }
-    //cutLoop = 0;
+    // cutLoop = 0;
     for (i = 0; i < AK4Jets.size(); ++i)
     {
       jet = AK4Jets[i];
@@ -586,7 +585,6 @@ double Analysis::AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent>
       {
         cutBTag++;
       }
-
     }
     if (cutBTag && ToggleCut[9])
     {
@@ -645,16 +643,16 @@ void Analysis::AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vec
   Int_t ToggleAllCuts, cutLoop;
   Int_t NCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   Int_t ToggleCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  ToggleCut[0] = 1; //Filter Zero Weight Events
-  ToggleCut[1] = 1; //NJetAK4 >= 2
-  ToggleCut[2] = 1; //PT_photon > 200GeV
-  ToggleCut[3] = 1; //HT > 400 GeV
-  ToggleCut[4] = 1; //Phi(j,HTMiss)>0.5(0.3)
+  ToggleCut[0] = 1; // Filter Zero Weight Events
+  ToggleCut[1] = 1; // NJetAK4 >= 2
+  ToggleCut[2] = 1; // PT_photon > 200GeV
+  ToggleCut[3] = 1; // HT > 400 GeV
+  ToggleCut[4] = 1; // Phi(j,HTMiss)>0.5(0.3)
   ToggleCut[5] = 1; //~isolated Photon, Electron, Muon PT > 10 GeV
-  ToggleCut[6] = 1; //isolated Tracks mt> 100GeV, pt > 10GeV
-  ToggleCut[7] = 1; //2 AK8 Jets PT > 200 GeV
-  ToggleCut[8] = 1; //mJet of 2 AK8 Jets in [10,140]GeV
-  ToggleCut[9] = 0; //AngularSep of AK8 and bTagged
+  ToggleCut[6] = 1; // isolated Tracks mt> 100GeV, pt > 10GeV
+  ToggleCut[7] = 1; // 2 AK8 Jets PT > 200 GeV
+  ToggleCut[8] = 1; // mJet of 2 AK8 Jets in [10,140]GeV
+  ToggleCut[9] = 0; // AngularSep of AK8 and bTagged
   ToggleAllCuts = 0;
   TVector3 HTmiss;
   // allEntries=1000;
@@ -700,7 +698,7 @@ void Analysis::AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vec
       // skip photons with references to multiple particles
       if (photon->Particles.GetEntriesFast() != 1)
         continue;
-      //particle = (GenParticle*) photon->Particles.At(0);
+      // particle = (GenParticle*) photon->Particles.At(0);
       if (photon->PT > 10 && ToggleCut[5])
       {
         if (nPhoton)
@@ -777,7 +775,7 @@ void Analysis::AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vec
 
     if (branchAK8Jet->GetEntriesFast() < 2)
     {
-      //NCut[7]++;
+      // NCut[7]++;
       continue;
     }
     softDropMass = ((Jet *)branchAK8Jet->At(0))->SoftDroppedJet.Mag();
@@ -871,7 +869,7 @@ void Analysis::AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vec
     }
     survived++;
     events.push_back(event);
-    //histMet->Fill(MET);
+    // histMet->Fill(MET);
   }
   printf("\n\nTotal %lld\nSurvived %lld\nEfficiency %f\n", allEntries, survived, ((float)survived) / allEntries);
   for (int i = 0; i < 10; i++)
@@ -921,16 +919,16 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
   Int_t ToggleAllCuts, cutLoop;
   Int_t NCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   Int_t ToggleCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  ToggleCut[0] = 1; //Filter Zero Weight Events
-  ToggleCut[1] = 1; //NJetAK4 >= 2
-  ToggleCut[2] = 1; //PT_miss > 200GeV
-  ToggleCut[3] = 1; //HT > 400 GeV
-  ToggleCut[4] = 1; //Phi(j,HTMiss)>0.5(0.3)
+  ToggleCut[0] = 1; // Filter Zero Weight Events
+  ToggleCut[1] = 1; // NJetAK4 >= 2
+  ToggleCut[2] = 1; // PT_miss > 200GeV
+  ToggleCut[3] = 1; // HT > 400 GeV
+  ToggleCut[4] = 1; // Phi(j,HTMiss)>0.5(0.3)
   ToggleCut[5] = 1; //~isolated Photon, Electron, Muon PT > 10 GeV
-  ToggleCut[6] = 1; //isolated Tracks mt> 100GeV, pt > 10GeV
-  ToggleCut[7] = 1; //2 AK8 Jets PT > 200 GeV
-  ToggleCut[8] = 1; //mJet of 2 AK8 Jets in [10,140]GeV
-  ToggleCut[9] = 1; //AngularSep of AK8 and bTagged
+  ToggleCut[6] = 1; // isolated Tracks mt> 100GeV, pt > 10GeV
+  ToggleCut[7] = 1; // 2 AK8 Jets PT > 200 GeV
+  ToggleCut[8] = 1; // mJet of 2 AK8 Jets in [10,140]GeV
+  ToggleCut[9] = 1; // AngularSep of AK8 and bTagged
   ToggleAllCuts = 0;
   TVector3 HTmiss;
   // allEntries=1000;
@@ -982,7 +980,7 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
       if (photon->Particles.GetEntriesFast() != 1)
         continue;
 
-      //particle = (GenParticle*) photon->Particles.At(0);
+      // particle = (GenParticle*) photon->Particles.At(0);
       if (photon->PT > 10 && ToggleCut[5])
         cutLoop++;
     }
@@ -1044,7 +1042,7 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
 
     if (branchAK8Jet->GetEntriesFast() < 2)
     {
-      //NCut[7]++;
+      // NCut[7]++;
       continue;
     }
     softDropMass = ((Jet *)branchAK8Jet->At(0))->SoftDroppedJet.Mag();
@@ -1138,7 +1136,7 @@ void Analysis::AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vec
     }
     survived++;
     events.push_back(event);
-    //histMet->Fill(MET);
+    // histMet->Fill(MET);
   }
   printf("\n\nTotal %lld\nSurvived %lld\nEfficiency %f\n", allEntries, survived, ((float)survived) / allEntries);
   for (int i = 0; i < 10; i++)
@@ -1197,16 +1195,16 @@ void Analysis::AnalyseEvents2(ExRootTreeReader *treeReader, vector<PassedEvent> 
   Int_t ToggleAllCuts, cutLoop;
   Int_t NCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   Int_t ToggleCut[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  ToggleCut[0] = 1; //Filter Zero Weight Events
-  ToggleCut[1] = 1; //NJetAK4 >= 2
-  ToggleCut[2] = 1; //PT_miss > 300GeV
-  ToggleCut[3] = 1; //HT > 400 GeV
-  ToggleCut[4] = 1; //Phi(j,HTMiss)>0.5(0.3)
+  ToggleCut[0] = 1; // Filter Zero Weight Events
+  ToggleCut[1] = 1; // NJetAK4 >= 2
+  ToggleCut[2] = 1; // PT_miss > 300GeV
+  ToggleCut[3] = 1; // HT > 400 GeV
+  ToggleCut[4] = 1; // Phi(j,HTMiss)>0.5(0.3)
   ToggleCut[5] = 1; //~isolated Photon, Electron, Muon PT > 10 GeV
-  ToggleCut[6] = 1; //isolated Tracks mt> 100GeV, pt > 10GeV
-  ToggleCut[7] = 1; //2 AK8 Jets PT > 200 GeV
-  ToggleCut[8] = 0; //mJet of 2 AK8 Jets in [10,140]GeV
-  ToggleCut[9] = 0; //AngularSep of AK8 and bTagged
+  ToggleCut[6] = 1; // isolated Tracks mt> 100GeV, pt > 10GeV
+  ToggleCut[7] = 1; // 2 AK8 Jets PT > 200 GeV
+  ToggleCut[8] = 0; // mJet of 2 AK8 Jets in [10,140]GeV
+  ToggleCut[9] = 0; // AngularSep of AK8 and bTagged
   ToggleAllCuts = 0;
   TVector3 HTmiss;
   // allEntries=1000;
@@ -1434,120 +1432,97 @@ void Analysis::AnalyseEvents2(ExRootTreeReader *treeReader, vector<PassedEvent> 
   }
 }
 
-double Analysis::FindNormalisation(const char *filename, int nFiles, vector<double> &mets)
+void Analysis::SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events, double intLumi)
 {
+  double loX[] = {4.248, 1.375, 4.584, 1.964};
+  double nloX[] = {5.410, 1.773, 6.741, 5.218};
+  double X[] = {181.0, 511.0, 78.0, 2344.0};
+  double ST[] = {2284, 1407, 1172, 10};
+  double NT[] = {147143876, 407148516, 84600510, 0};
+  vector<vector<PassedEvent>> rawEvents(3);
+  vector<PassedEvent> importedEvents;
+  RootIO::ReadEventsNewPassedEventDef("/home/gerrit/Documents/PHD/SUSY4Cathode/ClusterTestRun/root-on-vscode/AllCuts.root", importedEvents, 0);
 
-  TChain chain("Delphes");
-  RootIO::GetRootFiles(filename, chain, nFiles);
-  ExRootTreeReader *treeReader = new ExRootTreeReader(&chain);
-
-  TClonesArray *branchAK4Jet = treeReader->UseBranch("AK4Jets");
-  TClonesArray *branchMET = treeReader->UseBranch("MissingET");
-  TClonesArray *branchHT = treeReader->UseBranch("ScalarHT");
-
-  double HT = 0.0;
-  Int_t NJetAK4;
-  Long64_t allEntries = treeReader->GetEntries();
-  //allEntries=10000;
-  cout << "** Chain contains " << allEntries << " events" << endl;
-  int PassesHTCut = 0;
-  boost::progress_display *show_progress = new boost::progress_display(allEntries);
-
-  TCanvas *c1 = new TCanvas("c1Trans", "c1");
-  c1->cd();
-  TH1F *hist = new TH1F("ht", "ht", 100, 0, 1000);
-  gPad->SetLogy();
-  c1->SetGrid();
-  int correctEntry = 0;
-  for (Long64_t entry = 0; entry < allEntries; ++entry)
+  for (size_t i = 0; i < importedEvents.size(); i++)
   {
-    ++(*show_progress);
-    HT = 0.0;
-    // Load selected branches with data from specified event
-    treeReader->ReadEntry(entry);
-    NJetAK4 = branchAK4Jet->GetEntriesFast();
-    double met = ((MissingET *)branchMET->At(0))->MET;
-    if(met==0)
-      continue;
-    correctEntry++;
-    //if(metttt==0)
-      //cout << "jfjdkfjasjaldj"<< endl;
-    //double htSc = ((ScalarHT *)branchHT->At(0))->HT;
-    //if(htSc==0.0)
-    // continue;
-    for (int i = 0; i < NJetAK4; ++i)
-    {
-      Jet *jet = (Jet *)branchAK4Jet->At(i);
-      if (jet->PT > 30 && abs(jet->Eta) < 2.4)
-        HT += jet->PT;
-    }
-    hist->Fill(HT);
-    /*
-        if(NJetAK4<2)
-      continue;*/
-    double htSc = ((ScalarHT *)branchHT->At(0))->HT;
-    //cout << HT-htSc<<endl;
-    if(HT <400)
-      continue;
-      
-    if(met < 300)
-      continue;
-    PassesHTCut++;
-    mets.push_back(met);
-    //if(HT>0.0)
+    importedEvents[i].status--;
+    rawEvents[importedEvents[i].status].push_back(importedEvents[i]);
   }
-  //hist->Fit("expo");
-  hist->Draw();
-  c1->SaveAs("HT.eps");
-  printf("HT:\n%E\n%d rel. uncert. %E\n%lld\n\n", 1.0 * PassesHTCut / correctEntry, PassesHTCut, 1.0 / sqrt(PassesHTCut), correctEntry);
-  return 1.0 * PassesHTCut / correctEntry;
+
+  cout << "Done Reading"<< endl;
+  random_device rd;
+  mt19937_64 gen(0); // 0
+  uniform_real_distribution<double> dist(0.0, 1.0);
+  for (size_t i = 0; i < 3; i++)
+  {
+    double Nexpected = nloX[i] / loX[i] * intLumi* X[i] * ST[i] / NT[i];
+    cout << "Weight: " << Nexpected / ST[i] << "  Nexpected: " << Nexpected << "  Navail: " << rawEvents[i].size() << endl;
+    if (Nexpected / ST[i] > 1)
+      cout << "Not enough Events" << endl;
+    for (size_t iEvent = 0; iEvent < rawEvents[i].size(); iEvent++)
+    {
+      if (dist(gen) < Nexpected / ST[i])
+      {
+        events.push_back(rawEvents[i][iEvent]);
+      }
+    }
+  }
+  cout << "Total events : " << events.size() << endl;
+}
+void Analysis::SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events)
+{
+  Analysis::SampleFromEventsNewPassedEventDef(events, 300.0e3);
 }
 
-double Analysis::FindNormalisation(const char *filename, int nFiles)
+void Analysis::SampleFromEvents(vector<PassedEvent> &events, double intLumi)
 {
-  vector<double> mets;
-  return FindNormalisation(filename,nFiles,mets);
-}
-
-double Analysis::FindNormalisation(const char *filename)
-{
-  return Analysis::FindNormalisation(filename,20);
+  double loX[] = {4.248, 1.375, 4.584, 1.964};
+  double nloX[] = {5.410, 1.773, 6.741, 5.218};
+  double X[] = {181.0, 511.0, 78.0, 2344.0};
+  double ST[] = {2284, 1407, 1172, 10};
+  double NT[] = {36753049, 147113599, 42475284, 424699605};
+  vector<vector<PassedEvent>> rawEvents(4);
+  RootIO::ReadEvents("RootFiles/Z-Total.root", rawEvents[0], 0);
+  RootIO::ReadEvents("RootFiles/W-Total.root", rawEvents[1], 0);
+  RootIO::ReadEvents("RootFiles/tt-Total.root", rawEvents[2], 0);
+  RootIO::ReadEvents("RootFiles/A-Total.root", rawEvents[3]);
+  random_device rd;
+  mt19937_64 gen(0); // 0
+  uniform_real_distribution<double> dist(0.0, 1.0);
+  for (size_t i = 0; i < 4; i++)
+  {
+    double Nexpected = nloX[i] / loX[i] * intLumi * X[i] * ST[i] / NT[i];
+    cout << "Weight: " << Nexpected / ST[i] << "  Nexpected: " << Nexpected << "  Navail: " << rawEvents[i].size() << endl;
+    if (Nexpected / ST[i] > 1)
+      cout << "Not enough Events" << endl;
+    for (size_t iEvent = 0; iEvent < rawEvents[i].size(); iEvent++)
+    {
+      if (dist(gen) < Nexpected / ST[i])
+      {
+        events.push_back(rawEvents[i][iEvent]);
+      }
+    }
+  }
 }
 
 void Analysis::SampleFromEvents(vector<PassedEvent> &events)
 {
-  double loX[]={4.248,1.375,4.584,1.964};
-  double nloX[]={5.410,1.773,6.741,5.218};
-  double X[]={181.0,511.0,78.0,2344.0};
-  double ST[]={2284,1407,1172,10};
-  double NT[]={36753049,147113599,42475284,424699605};
-  vector<vector<PassedEvent>> rawEvents(4);
-  RootIO::ReadEvents("RootFiles/Z-Total.root",rawEvents[0],0);
-  RootIO::ReadEvents("RootFiles/W-Total.root",rawEvents[1],0);
-  RootIO::ReadEvents("RootFiles/tt-Total.root",rawEvents[2],0);
-  RootIO::ReadEvents("RootFiles/A-Total.root",rawEvents[3]);
-  random_device rd;
-  mt19937_64 gen(rd()); //0
-  uniform_real_distribution<double> dist(0.0,1.0);
-  for (size_t i = 0; i < 4; i++)
-  {
-    double Nexpected = nloX[i]/loX[i]*137.0e3*X[i]*ST[i]/NT[i];
-    cout << "Weight: " << Nexpected/ST[i]<< "  Nexpected: "<< Nexpected << "  Navail: " << rawEvents[i].size() <<endl;
-    if(Nexpected/ST[i]>1)
-      cout << "Not enough Events"<< endl;
-    for (size_t iEvent = 0; iEvent < rawEvents[i].size(); iEvent++)
-    {
-      if(dist(gen)<Nexpected/ST[i])
-      {
-        events.push_back(rawEvents[i][iEvent]);
-      }
-    }    
-  }  
+  Analysis::SampleFromEvents(events, 300.0e3);
 }
 
 double Analysis::TheoryXSection(double m_Gluino)
 {
-  return pow(10.0,(1300.0-m_Gluino)*(2.69897/1150)-1.301);
+  return pow(10.0, 1.8821e-7 * sq(m_Gluino) - 3.0554e-3 * m_Gluino + 2.3574);
+}
+
+double Analysis::TheoryXSectionUpper(double m_Gluino)
+{
+  return pow(10.0, 2.1124e-7 * sq(m_Gluino) - 3.1114e-3 * m_Gluino + 2.4538);
+}
+
+double Analysis::TheoryXSectionLower(double m_Gluino)
+{
+  return pow(10.0, 2.3056e-7 * sq(m_Gluino) - 3.2642e-3 * m_Gluino + 2.5049);
 }
 
 TF1 *Analysis::fitFunc;
@@ -1566,10 +1541,10 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
 {
   double sysError = 0.0;
   double statError = 0.0;
-  TCanvas *c1 = new TCanvas("c1FitCherbyshev", "c1");
+  TCanvas *c1 = new TCanvas("c1FitCherbyshev", "c1",200,180);
   c1->cd();
   TH1F *h1 = new TH1F("h1", "", 20, 40.0, 140.0);
-  
+
   for (size_t i = 0; i < events.size(); i++)
   {
     if (events[i].mj2 < 70.0 || events[i].mj2 > 100.0 || events[i].status >= 10)
@@ -1584,24 +1559,24 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
     TF1 *backGroundFit = new TF1(("Fit" + polyName).c_str(), excludeSignalRegion, 40, 140, fitFunc->GetNpar());
     for (size_t iPar = 0; iPar < fitFunc->GetNpar(); iPar++)
     {
-      backGroundFit->SetParameter(iPar,1.0);
+      backGroundFit->SetParameter(iPar, 1.0);
     }
-    
-    cout << "++++++++++++++"<< endl;
+
+    cout << "++++++++++++++" << endl;
     cout << polyName << endl;
     h1->Fit(backGroundFit, "IQ");
     yield.push_back(fitFunc->Integral(70, 100) / 5);
     if (n == 1)
     {
       h1->Draw("E");
-      h1->GetYaxis()->SetRangeUser(0,150);
+      h1->GetYaxis()->SetRangeUser(0, 150);
       params.push_back(backGroundFit->GetParameter(0));
       params.push_back(backGroundFit->GetParameter(1));
       params.push_back(backGroundFit->GetParError(0));
       params.push_back(backGroundFit->GetParError(1));
-      c1->SaveAs("Plots/Ch1.eps");
-      TH1F *pseudoyield = new TH1F("pseudoExperiments", "", 100, yield[0] - 100, yield[0] + 100);
-      int nPseudo = 1000;
+      c1->SaveAs("Plots/Ch1.pdf");
+      TH1F *pseudoyield = new TH1F("PseudoExperiments", "Pseudoexperiments BG normalisation", 100, yield[0] - 100, yield[0] + 100);
+      int nPseudo = 10000;
       TF1 *backgroundModel = new TF1("backgroundmodel", "[1]*x+[0]", 40.0, 140.0);
       backgroundModel->SetParameter(0, params[0]);
       backgroundModel->SetParameter(1, params[1]);
@@ -1613,10 +1588,17 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
         pseudoyield->Fill(fitFunc->Integral(70, 100) / 5);
         delete pseudo;
       }
-      pseudoyield->Fit("gaus", "IQ");
+      TFitResultPtr fitptr=pseudoyield->Fit("gaus", "IQS");
       statError = pseudoyield->GetFunction("gaus")->GetParameter(2);
+      fitptr->Print();
+      pseudoyield->GetXaxis()->SetTitle("B_{norm}");
+      gStyle->SetStatFontSize(0.1);
       pseudoyield->Draw();
-      c1->SaveAs("Plots/PseudoExperiments.eps");
+      gPad->Update();
+      
+
+      gStyle->SetOptFit(1);
+      c1->SaveAs("Plots/PseudoExperiments.pdf");
     }
   }
   bNorm = yield[0];
@@ -1624,11 +1606,11 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
   {
     sysError = max(sysError, abs(yield[0] - yield[i]));
   }
-  bNormErr=sqrt(sq(sysError) + sq(statError));
-  cout <<"B_Norm " << bNorm << "\nStat : " << statError << "\nSys : " << sysError << "\nTotal : " << bNormErr << endl;
+  bNormErr = sqrt(sq(sysError) + sq(statError));
+  cout << "B_Norm " << bNorm << "\nStat : " << statError << "\nSys : " << sysError << "\nTotal : " << bNormErr << endl;
 }
 
-void Analysis::CalcTransferFactor(vector<PassedEvent> events,double bNorm,double bNormErr, vector<double> &NCRi, double &transferFactor, double &transferFactorErr)
+void Analysis::CalcTransferFactor(vector<PassedEvent> events, double bNorm, double bNormErr, vector<double> &NCRi, double &transferFactor, double &transferFactorErr)
 {
   TCanvas *c1 = new TCanvas("c1Trans", "c1");
   c1->cd();
@@ -1648,26 +1630,26 @@ void Analysis::CalcTransferFactor(vector<PassedEvent> events,double bNorm,double
   transferFactor = bNorm / histCR->Integral();
   transferFactorErr = bNormErr / histCR->Integral();
   NCRi.push_back(histCR->GetBinContent(1));
-  NCRi.push_back( histCR->GetBinContent(2));
-  NCRi.push_back( histCR->GetBinContent(3));
-  NCRi.push_back( histCR->GetBinContent(4));
-  NCRi.push_back( histCR->GetBinContent(5));
-  NCRi.push_back( histCR->GetBinContent(6));
+  NCRi.push_back(histCR->GetBinContent(2));
+  NCRi.push_back(histCR->GetBinContent(3));
+  NCRi.push_back(histCR->GetBinContent(4));
+  NCRi.push_back(histCR->GetBinContent(5));
+  NCRi.push_back(histCR->GetBinContent(6));
 
-//  c1->SaveAs("Plots/CR.eps");
+  //  c1->SaveAs("Plots/CR.pdf");
+  cout << "\n\n++++++++++++++++++++++++++ \n TransferFactor: "<< transferFactor << "  +-  " << transferFactorErr<<endl;
 }
 
-void Analysis::GetEventsInSignalRegion(vector<PassedEvent> events,vector<PassedEvent> &signalevents)
+void Analysis::GetEventsInSignalRegion(vector<PassedEvent> events, vector<PassedEvent> &signalevents)
 {
-    for (int i = 0; i < events.size(); i++)
-    {
-      if(events[i].status < 10&& events[i].mj1 > 70 && events[i].mj1 < 100 && events[i].mj2 > 70 && events[i].mj2 < 100)
-        signalevents.push_back(events[i]);
-    }
-    
+  for (int i = 0; i < events.size(); i++)
+  {
+    if (events[i].status < 10 && events[i].mj1 > 70 && events[i].mj1 < 100 && events[i].mj2 > 70 && events[i].mj2 < 100)
+      signalevents.push_back(events[i]);
+  }
 }
 
-void Analysis::GetSRBinContent(vector<PassedEvent> &signalevents,vector<double> &binContent)
+void Analysis::GetSRBinContent(vector<PassedEvent> &signalevents, vector<double> &binContent)
 {
   const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
   TH1 *histSR = new TH1F("SignalRegionTMP", "SR", 6, bins);
@@ -1679,7 +1661,6 @@ void Analysis::GetSRBinContent(vector<PassedEvent> &signalevents,vector<double> 
   {
     binContent.push_back(histSR->GetBinContent(i));
   }
-  
+
   delete histSR;
-  
 }

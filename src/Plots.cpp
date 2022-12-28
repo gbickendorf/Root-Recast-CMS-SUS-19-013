@@ -2,7 +2,12 @@
 
 void Plots::PlotPTMiss(vector<PassedEvent> events)
 {
-    TCanvas *c1 = new TCanvas("cPTMiss", "c1");
+    TCanvas *c1 = new TCanvas("cPTMiss", "c1",800,700);
+    gPad->SetTickx();
+    gPad->SetTicky();
+    c1->SetRightMargin(0.04);
+    c1->SetLeftMargin(0.13);
+    c1->SetBottomMargin(0.13);
     c1->cd();
     const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
     TH1 *histMetZ = new TH1F("ptmiss_Z", "ptmiss Z", 6, bins);
@@ -18,21 +23,19 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
             histMettt->Fill(events[i].ptmiss);
     }
     gPad->SetLogy();
-    histMetZ->SetFillColor(kGreen);
-    histMetZ->GetYaxis()->SetRangeUser(0.1, 1e4);
+    histMetZ->SetFillColor(kGreen+1);
+    
     histMetZ->GetXaxis()->SetTitle("p^{miss}_{T} [GeV]");
     histMetZ->Draw("PLC");
-    //c1->SaveAs("Plots/METZ.eps");
+    //c1->SaveAs("Plots/METZ.pdf");
 
-    histMetW->SetFillColor(kBlue);
-    histMetW->GetYaxis()->SetRangeUser(0.1, 1e4);
+    histMetW->SetFillColor(kBlue+1);
     histMetW->Draw();
-    //c1->SaveAs("Plots/METW.eps");
+    //c1->SaveAs("Plots/METW.pdf");
 
-    histMettt->SetFillColor(kCyan);
-    histMettt->GetYaxis()->SetRangeUser(0.1, 1e4);
+    histMettt->SetFillColor(kCyan+1);
     histMettt->Draw();
-    //c1->SaveAs("Plots/METtt.eps");
+    //c1->SaveAs("Plots/METtt.pdf");
 
     THStack *hs = new THStack("hs", "Simulation 137 fb^{-1} (13 TeV)");
     histMettt->SetStats(0);
@@ -54,10 +57,15 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
     gPad->Modified();
     gPad->Update();
     hs->GetYaxis()->SetTitle("Events/bin");
-    hs->GetYaxis()->SetTitleSize(0.049F);
+    hs->GetYaxis()->SetTitleSize(0.06F);
     hs->GetXaxis()->SetTitle("p^{miss}_{T} [GeV]");
-    hs->GetXaxis()->SetTitleSize(0.039F);
-    c1->SaveAs("Plots/Stack.eps");
+    hs->GetXaxis()->SetTitleSize(0.06F);
+
+    hs->GetYaxis()->SetLimits(1, 6000); // "xmin", "xmax"
+    hs->GetYaxis()->SetRangeUser(1,3000);
+    hs->SetMinimum(2.5e0); // "ymin"
+    hs->SetMaximum(3.8e3);
+    c1->SaveAs("Plots/Stack.pdf");
 
     TFile *file = new TFile("Analysis.root", "UPDATE");
     histMetW->Write("histMetW", TObject::kOverwrite);
@@ -81,8 +89,16 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     linFuncMiddle->SetLineStyle(kDashed);
     TF1 *linFuncRight = (TF1 *)linFunc->Clone();
     linFuncRight->SetRange(100, 140);
+    linFuncMiddle->SetLineColor(kBlue);
+    linFuncLeft->SetLineColor(kBlue);
+    linFuncRight->SetLineColor(kBlue);
 
-    TCanvas *c1 = new TCanvas("cPlot2", "c1");
+    TCanvas *c1 = new TCanvas("cPlot2", "c1",800,700);
+    gPad->SetTickx();
+    gPad->SetTicky();
+    c1->SetRightMargin(0.04);
+    c1->SetLeftMargin(0.13);
+    c1->SetBottomMargin(0.13);
     c1->cd();
     TH1F *leadMjZ = new TH1F("mj1Z", "", 20, 40.0, 140.0);
     TH1F *leadMjW = new TH1F("mj1W", "", 20, 40.0, 140.0);
@@ -101,9 +117,9 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
         if (events[i].status == 2)
             leadMjtt->Fill(events[i].mj1);
     }
-    leadMjZ->SetFillColor(kGreen);
-    leadMjW->SetFillColor(kBlue);
-    leadMjtt->SetFillColor(kCyan);
+    leadMjZ->SetFillColor(kGreen+1);
+    leadMjW->SetFillColor(kBlue+1);
+    leadMjtt->SetFillColor(kCyan+1);
     leadMjZ->Draw();
     leadMjZ->GetYaxis()->SetRangeUser(0, 150);
     leadMjZ->GetListOfFunctions()->Add(linFuncLeft);
@@ -116,13 +132,13 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     hs->Add(leadMjZ);
     hs->Draw();
     hs->GetYaxis()->SetTitle("Events/(5 GeV)");
-    hs->GetYaxis()->SetTitleSize(0.049F);
+    hs->GetYaxis()->SetTitleSize(0.06F);
     hs->GetXaxis()->SetTitle("Leading jet m_{jet} [GeV]");
-    hs->GetXaxis()->SetTitleSize(0.039F);
+    hs->GetXaxis()->SetTitleSize(0.06F);
     hs->Draw();
     hs->GetYaxis()->SetRangeUser(0, 150);
 
-    TLegend leg(.3, .8, .9, .9, "Subleading jet m_{jet} in Z signal window");
+    TLegend leg(.3, .7, .9, .9, "Subleading jet m_{jet} in Z signal window");
     leg.SetFillColor(0);
     leg.SetNColumns(2);
     leg.AddEntry(leadMjZ, "Z + jets");
@@ -130,21 +146,28 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     leg.AddEntry(leadMjtt, "tt + jets");
     leg.AddEntry(linFuncLeft, "Linear fit with unc.");
     leg.Draw();
+    linFuncLeft->SetFillColor(kBlue);
+    linFuncLeft->SetFillStyle(3345);
+    linFuncLeft->Draw("SAME E2");
+    linFuncRight->SetFillColor(kBlue);
+    linFuncRight->SetFillStyle(3345);
+    linFuncRight->Draw("SAME E2");
     hs->SetMaximum(150);
-    c1->SaveAs("Plots/MJ1.eps");
+    c1->SaveAs("Plots/MJ1.pdf");
 }
 
 void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, double transferFactor,double transferFactorErr)
 {
     const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
-    TH1 *histSR = new TH1F("SignalRegion", "SR", 6, bins);
-    TH1 *histBG = new TH1F("BackGround", "BG", 6, bins);
+    TH1 *histSR = new TH1F("SignalRegion", "", 6, bins);
+    TH1 *histBG = new TH1F("BackGround", "", 6, bins);
     for (int i = 0; i < 6; i++)
     {
         histBG->SetBinContent(i + 1, NCRi[i] * transferFactor);
+        histBG->SetBinError(i+1,sqrt(pow(NCRi[i] * transferFactorErr,2)+pow(sqrt(NCRi[i]) * transferFactor,2)));
         /* code */
     }
-    TCanvas *c1 = new TCanvas("cSRPlot", "c1");
+    TCanvas *c1 = new TCanvas("cSRPlot", "c1",800,600);
     c1->cd();
     gPad->SetLogy();
     for (size_t i = 0; i < events.size(); i++)
@@ -157,10 +180,39 @@ void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, do
 
         /* code */
     }
-    histSR->Draw("E");
+
+    
+    histBG->SetLineColor(kRed);
+    histBG->GetXaxis()->SetTitle("p^{miss}_{T} [GeV]");
+    histBG->GetYaxis()->SetTitle("Events / bin");
+    TH1 * histbgCopy = (TH1F*) histBG->Clone();
+    histbgCopy->SetStats(0);
+    histbgCopy->Draw("HIST");
+    histBG->SetStats(0);
+    //histBG->SetFillColor(kRed);
+    histBG->SetFillStyle(3345);
+    histBG->SetFillColorAlpha(kRed-9,0.3);
+    histBG->Draw("same E2"); 
+    histBG->SetStats(0);
+
+    histSR->Draw("same E");
     histSR->GetYaxis()->SetRangeUser(0.01, 1000.0);
-    histBG->Draw("HIST same");
-    c1->SaveAs("Plots/SR.eps");
+    histSR->SetStats(0);
+    histSR->SetFillStyle(0);
+    histSR->SetMarkerStyle(kFullCircle);
+    histSR->SetLineColor(kBlack);
+
+    TLegend leg(.3, .8, .9, .9, "");
+    leg.SetFillColor(0);
+    leg.SetNColumns(2);
+    leg.AddEntry(histBG, "Pred. (stat. #oplus syst.) unc.");
+    leg.AddEntry(histSR, "Observed data");
+    leg.Draw();
+    
+
+    //histBG->Draw("same hist"); 
+    //histBG->Draw("e2SAME");
+    c1->SaveAs("Plots/SR.pdf");
 }
 
 void Plots::PlotPTShape(vector<PassedEvent> events)
@@ -199,7 +251,7 @@ void Plots::PlotPTShape(vector<PassedEvent> events)
     hs->Add(histSRZ);
     hs->Add(histCRZ);
     hs->Draw("nostack");
-    c1->SaveAs("Plots/zShape.eps");
+    c1->SaveAs("Plots/zShape.pdf");
 }
 
 void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
@@ -278,7 +330,7 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
     RatioPhotonSRErr->SetFillColor(kBlack);
     RatioPhotonSRErr->Draw("SAME E2");
     RatioPhoton->GetYaxis()->SetRangeUser(0.0, 0.6);
-    c1->SaveAs("Plots/RatioPhoton.eps");
+    c1->SaveAs("Plots/RatioPhoton.pdf");
 
     RatioLepton->Fit("pol0");
     RatioLepton->Draw("E");
@@ -297,7 +349,7 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
     RatioLeptonSRErr->SetFillColor(kBlack);
     RatioLeptonSRErr->Draw("SAME E2");
     RatioLepton->GetYaxis()->SetRangeUser(0.0, 0.8);
-    c1->SaveAs("Plots/RatioLepton.eps");
+    c1->SaveAs("Plots/RatioLepton.pdf");
     gPad->SetLogy();
     histPhotonValidationSR->Scale(1.0 / histPhotonValidationSR->Integral());
     histLeptonValidationSR->Scale(1.0 / histLeptonValidationSR->Integral());
@@ -321,7 +373,7 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
     hsPho->Draw("nostack");
     //auto rpPho = new TRatioPlot(histPhotonValidationSR, histPhotonValidationCR);
     //rpPho->Draw();
-    c1->SaveAs("Plots/PhotonVal.eps");
+    c1->SaveAs("Plots/PhotonVal.pdf");
 
     THStack *hsLep = new THStack("LeptonVal", "Simulation 137 fb^{-1} (13 TeV)");
     hsLep->Add(histLeptonValidationSR);
@@ -329,7 +381,7 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
     hsLep->Draw("nostack");
     //auto rpLep = new TRatioPlot(histLeptonValidationSR, histLeptonValidationCR);
     //rpPho->Draw();
-    c1->SaveAs("Plots/LeptonVal.eps");
+    c1->SaveAs("Plots/LeptonVal.pdf");
 }
 
 void Plots::PlotAll()

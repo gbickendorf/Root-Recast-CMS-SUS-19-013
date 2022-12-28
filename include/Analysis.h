@@ -22,6 +22,9 @@
 #include <TF1.h>
 #include <TCanvas.h>
 #include <TFitResult.h>
+#include <TFitResultPtr.h>
+#include <TPaveText.h>
+#include <TStyle.h>
 #include "classes/DelphesClasses.h"
 #include <boost/progress.hpp>
 #include <algorithm>
@@ -40,13 +43,15 @@ class Analysis {
         static void AnalyseEventsSingleLeptonSample(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents);
         static void AnalyseEventsSinglePhotonSample(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents);
         static void AnalyseEvents2(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents, int status);
-        static double FindNormalisation(const char * filename);
-        static double FindNormalisation(const char * filename, int nFiles);
-        static double FindNormalisation(const char * filename, int nFiles, vector<double> &mets);
         static void SampleFromEvents(vector<PassedEvent> &events);
+        static void SampleFromEvents(vector<PassedEvent> &events, double intLumi);
+        static void SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events);
+        static void SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events, double intLumi);
         static void FitCherbyshev(vector<PassedEvent> events ,double &bNorm, double &bNormErr,vector<double> &params);
         static void CalcTransferFactor(vector<PassedEvent> events,double bNorm,double bNormErr, vector<double> &NCRi, double &transferFactor, double &transferFactorErr);
         static void GetEventsInSignalRegion(vector<PassedEvent> events,vector<PassedEvent> &signalevents);
         static void GetSRBinContent(vector<PassedEvent> &signalevents,vector<double> &binContent);
         static double TheoryXSection(double m_Gluino);
+        static double TheoryXSectionUpper(double m_Gluino);
+        static double TheoryXSectionLower(double m_Gluino);
 };

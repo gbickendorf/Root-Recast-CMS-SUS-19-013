@@ -47,6 +47,12 @@ TCanvas.h
 -
 TFitResult.h
 -
+TFitResultPtr.h
+-
+TPaveText.h
+-
+TStyle.h
+-
 classes/DelphesClasses.h
 ../include/classes/DelphesClasses.h
 boost/progress.hpp
@@ -112,6 +118,12 @@ iostream
 fstream
 -
 algorithm
+-
+TChain.h
+-
+TChainElement.h
+-
+TTreeReader.h
 -
 
 ../include/Stats.h

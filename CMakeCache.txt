@@ -510,7 +510,7 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding GSL
-FIND_PACKAGE_MESSAGE_DETAILS_GSL:INTERNAL=[/usr/local/include][/usr/local/lib/libgsl.so][/usr/local/lib/libgslcblas.so][v2.6()]
+FIND_PACKAGE_MESSAGE_DETAILS_GSL:INTERNAL=[/usr/local/include][/usr/local/lib/libgsl.so][/usr/local/lib/libgslcblas.so][v2.7.1()]
 //Details about finding OpenMP
 FIND_PACKAGE_MESSAGE_DETAILS_OpenMP:INTERNAL=[TRUE][TRUE][c ][v()]
 //Details about finding OpenMP_C
@@ -563,7 +563,7 @@ GSL_STATIC_LIBS_OTHER:INTERNAL=
 GSL_STATIC_LIBS_PATHS:INTERNAL=
 //ADVANCED property for variable: GSL_VERSION
 GSL_VERSION-ADVANCED:INTERNAL=1
-GSL_VERSION:INTERNAL=2.6
+GSL_VERSION:INTERNAL=2.7.1
 GSL_gsl_INCLUDEDIR:INTERNAL=
 GSL_gsl_LIBDIR:INTERNAL=
 GSL_gsl_PREFIX:INTERNAL=
