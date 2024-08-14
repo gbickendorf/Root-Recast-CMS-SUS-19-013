@@ -13,6 +13,8 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
     TH1 *histMetZ = new TH1F("ptmiss_Z", "ptmiss Z", 6, bins);
     TH1 *histMetW = new TH1F("ptmiss_W", "ptmiss W", 6, bins);
     TH1 *histMettt = new TH1F("ptmiss_tt", "ptmiss tt", 6, bins);
+    TH1 *histCMS = new TH1F("ptmiss_CMS", "ptmiss_CMS", 6, bins);
+    TH1 *histComb = new TH1F("ptmiss_Comb", "ptmiss_Comb", 6, bins);
     for (size_t i = 0; i < events.size(); i++)
     {
         if (events[i].status == 0)
@@ -22,6 +24,15 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
         if (events[i].status == 2)
             histMettt->Fill(events[i].ptmiss);
     }
+
+    for (size_t i = 1;  i < 7 ; i++ )
+    {
+        
+        histComb->SetBinContent(i,histMetZ->GetBinContent(i)+histMetW->GetBinContent(i)+histMettt->GetBinContent(i));
+        cout << histMetZ->GetBinContent(i)+histMetW->GetBinContent(i)+histMettt->GetBinContent(i) << endl;
+        //cout << histMettt->GetBinContent(i) << ",";
+    }
+    cout << endl;
     gPad->SetLogy();
     histMetZ->SetFillColor(kGreen+1);
     
@@ -37,10 +48,46 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
     histMettt->Draw();
     //c1->SaveAs("Plots/METtt.pdf");
 
+    histCMS->SetBinContent(1,2522.77905974772);
+    histCMS->SetBinContent(2,735.721545065897);
+    histCMS->SetBinContent(3,249.233331469597);
+    histCMS->SetBinContent(4,53.0196678405491);
+    histCMS->SetBinContent(5,14.4877083933158);
+    histCMS->SetBinContent(6,4.43949282478645);
+    histCMS->SetLineColorAlpha(kRed, 0.95);
+    histCMS->SetLineStyle(kDashed);
+    histCMS->Draw();
+    histComb->Draw("SAME E");
+    c1->SaveAs("Plots/CMS.pdf");
+
+    const Int_t n = 6;
+    vector<double> count,syst_low, syst_high, stat_low, stat_high ,binCenter, xWidth;
+    for(size_t i = 1; i <7 ; i++)
+    {
+        count.push_back(histMetZ->GetBinContent(i)+histMetW->GetBinContent(i)+histMettt->GetBinContent(i));
+        syst_low.push_back(count[i-1]*0.19);
+        syst_high.push_back(count[i-1]*0.34);
+        stat_low.push_back(sqrt(count[i-1]));
+        stat_high.push_back(sqrt(count[i-1]));
+        binCenter.push_back(histMetZ->GetBinCenter(i));
+        xWidth.push_back(100);
+    }
+    TGraphMultiErrors* syst = new TGraphMultiErrors(6,&binCenter[0],&count[0],&xWidth[0],&xWidth[0],&syst_low[0],&syst_high[0]);
+    syst->AddYError(6,&stat_low[0],&stat_high[0]);
+    syst->SetMarkerStyle(20);
+    syst->SetLineColor(kRed);
+    syst->GetAttLine(0)->SetLineColor(kBlack);
+    syst->GetAttLine(1)->SetLineColor(kBlue);
+    syst->GetAttFill(1)->SetFillStyle(0);
+    syst->Draw("APS ; Z ; 5 s=0.5");
+    c1->SaveAs("Plots/Syst.pdf");
+
+
     THStack *hs = new THStack("hs", "Simulation 137 fb^{-1} (13 TeV)");
     histMettt->SetStats(0);
     histMetW->SetStats(0);
     histMetZ->SetStats(0);
+    histCMS->SetStats(0);
     hs->Add(histMettt);
     hs->Add(histMetW);
     hs->Add(histMetZ);
@@ -52,7 +99,11 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
     leg.AddEntry(histMettt, "tt + jets");
 
     //hs->GetXaxis()->SetTitle();
+    syst->Draw("APS ; Z ; 5 s=0.5");
     hs->Draw("");
+    histCMS->Draw("SAME");
+    //syst->Draw("SAME APS ; Z ; 5 s=0.5");
+    //syst->Draw("APS ; Z ; 5 s=0.5");
     leg.Draw("");
     gPad->Modified();
     gPad->Update();
@@ -76,19 +127,19 @@ void Plots::PlotPTMiss(vector<PassedEvent> events)
     delete file;
 }
 
-void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
+void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params, double mjmin, double mjmax)
 {
     TF1 *linFunc = (TF1 *)gROOT->GetFunction("pol1");
     linFunc->SetParameters(params[0], params[1]);
     linFunc->SetParError(0, params[2]);
     linFunc->SetParError(0, params[3]);
     TF1 *linFuncLeft = (TF1 *)linFunc->Clone();
-    linFuncLeft->SetRange(40, 70);
+    linFuncLeft->SetRange(mjmin-30, mjmin);
     TF1 *linFuncMiddle = (TF1 *)linFunc->Clone();
-    linFuncMiddle->SetRange(70, 100);
+    linFuncMiddle->SetRange(mjmin, mjmax);
     linFuncMiddle->SetLineStyle(kDashed);
     TF1 *linFuncRight = (TF1 *)linFunc->Clone();
-    linFuncRight->SetRange(100, 140);
+    linFuncRight->SetRange(mjmax, mjmax+40);
     linFuncMiddle->SetLineColor(kBlue);
     linFuncLeft->SetLineColor(kBlue);
     linFuncRight->SetLineColor(kBlue);
@@ -100,14 +151,14 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     c1->SetLeftMargin(0.13);
     c1->SetBottomMargin(0.13);
     c1->cd();
-    TH1F *leadMjZ = new TH1F("mj1Z", "", 20, 40.0, 140.0);
-    TH1F *leadMjW = new TH1F("mj1W", "", 20, 40.0, 140.0);
-    TH1F *leadMjtt = new TH1F("mj1tt", "", 20, 40.0, 140.0);
-    TH2F *mj = new TH2F("mjs", "", 20, 40.0, 140.0, 20, 40.0, 140.0);
+    TH1F *leadMjZ = new TH1F("mj1Z", "", 20,mjmin-30, mjmax+40);
+    TH1F *leadMjW = new TH1F("mj1W", "", 20,mjmin-30, mjmax+40);
+    TH1F *leadMjtt = new TH1F("mj1tt", "", 20,mjmin-30, mjmax+40);
+    TH2F *mj = new TH2F("mjs", "", 20,mjmin-30, mjmax+40, 20, mjmin-30, mjmax+40);
     for (size_t i = 0; i < events.size(); i++)
     {
 
-        if (events[i].mj2 < 70.0 || events[i].mj2 > 100.0)
+        if (events[i].mj2 < mjmin || events[i].mj2 > mjmax)
             continue;
         mj->Fill(events[i].mj1, events[i].mj2);
         if (events[i].status == 0)
@@ -121,7 +172,7 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     leadMjW->SetFillColor(kBlue+1);
     leadMjtt->SetFillColor(kCyan+1);
     leadMjZ->Draw();
-    leadMjZ->GetYaxis()->SetRangeUser(0, 150);
+    leadMjZ->GetYaxis()->SetRangeUser(0, 300);
     leadMjZ->GetListOfFunctions()->Add(linFuncLeft);
     leadMjZ->GetListOfFunctions()->Add(linFuncMiddle);
     leadMjZ->GetListOfFunctions()->Add(linFuncRight);
@@ -136,7 +187,7 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     hs->GetXaxis()->SetTitle("Leading jet m_{jet} [GeV]");
     hs->GetXaxis()->SetTitleSize(0.06F);
     hs->Draw();
-    hs->GetYaxis()->SetRangeUser(0, 150);
+    hs->GetYaxis()->SetRangeUser(0, 300);
 
     TLegend leg(.3, .7, .9, .9, "Subleading jet m_{jet} in Z signal window");
     leg.SetFillColor(0);
@@ -152,11 +203,11 @@ void Plots::PlotMJ1(vector<PassedEvent> events, vector<double> params)
     linFuncRight->SetFillColor(kBlue);
     linFuncRight->SetFillStyle(3345);
     linFuncRight->Draw("SAME E2");
-    hs->SetMaximum(150);
+    hs->SetMaximum(300);
     c1->SaveAs("Plots/MJ1.pdf");
 }
 
-void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, double transferFactor,double transferFactorErr)
+void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, double transferFactor,double transferFactorErr, double mjmin, double mjmax)
 {
     const double bins[7] = {300.0, 450.0, 600.0, 800.0, 1000.0, 1200.0, 2000.0};
     TH1 *histSR = new TH1F("SignalRegion", "", 6, bins);
@@ -175,7 +226,7 @@ void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, do
         PassedEvent event = events[i];
         if (event.status >= 10)
             continue;
-        if (event.mj1 > 70 && event.mj1 < 100 && event.mj2 > 70 && event.mj2 < 100)
+        if (event.mj1 > mjmin && event.mj1 < mjmax && event.mj2 > mjmin && event.mj2 < mjmax)
             histSR->Fill(event.ptmiss);
 
         /* code */
@@ -215,7 +266,7 @@ void Plots::PlotSignalRegion(vector<PassedEvent> events, vector<double> NCRi, do
     c1->SaveAs("Plots/SR.pdf");
 }
 
-void Plots::PlotPTShape(vector<PassedEvent> events)
+void Plots::PlotPTShape(vector<PassedEvent> events, double mjmin, double mjmax)
 {
     TCanvas *c1 = new TCanvas("cPTShape", "c1");
     c1->cd();
@@ -228,14 +279,14 @@ void Plots::PlotPTShape(vector<PassedEvent> events)
     for (size_t i = 0; i < events.size(); i++)
     {
         PassedEvent evnt = events[i];
-        if (evnt.mj1 > 70 && evnt.mj1 < 100 && evnt.mj2 > 70 && evnt.mj2 < 100)
+        if (evnt.mj1 > mjmin && evnt.mj1 < mjmax && evnt.mj2 > mjmin && evnt.mj2 < mjmax)
         {
             if (evnt.status == 0)
                 histSRZ->Fill(evnt.ptmiss);
             if (evnt.status == 1)
                 histSRW->Fill(evnt.ptmiss);
         }
-        if ((evnt.mj1 < 70 || evnt.mj1 > 100) && (evnt.mj2 < 70 || evnt.mj2 > 100))
+        if ((evnt.mj1 < mjmin || evnt.mj1 > mjmax) && (evnt.mj2 < mjmin || evnt.mj2 > mjmax))
         {
             if (evnt.status == 0)
                 histCRZ->Fill(evnt.ptmiss);
@@ -254,7 +305,7 @@ void Plots::PlotPTShape(vector<PassedEvent> events)
     c1->SaveAs("Plots/zShape.pdf");
 }
 
-void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
+void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events, double mjmin, double mjmax)
 {
     TCanvas *c1 = new TCanvas("cLepPhoVal", "c1");
     c1->cd();
@@ -270,14 +321,14 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
         if (prev == evnt.ptmiss)
             continue;
         prev = evnt.ptmiss;
-        if (evnt.mj1 > 70 && evnt.mj1 < 100 && evnt.mj2 > 70 && evnt.mj2 < 100)
+        if (evnt.mj1 > mjmin && evnt.mj1 < mjmax && evnt.mj2 > mjmin && evnt.mj2 < mjmax)
         {
             if (evnt.status == 11)
                 histPhotonValidationSR->Fill(evnt.ptmiss);
             if (evnt.status == 10)
                 histLeptonValidationSR->Fill(evnt.ptmiss);
         }
-        if ((evnt.mj1 < 70 || evnt.mj1 > 100) && (evnt.mj2 < 70 || evnt.mj2 > 100))
+        if ((evnt.mj1 < mjmin || evnt.mj1 > mjmax) && (evnt.mj2 < mjmin || evnt.mj2 > mjmax))
         {
             if (evnt.status == 11)
                 histPhotonValidationCR->Fill(evnt.ptmiss);
@@ -384,7 +435,7 @@ void Plots::PlotPhotonLeptonValidation(vector<PassedEvent> events)
     c1->SaveAs("Plots/LeptonVal.pdf");
 }
 
-void Plots::PlotAll()
+void Plots::PlotAll(double mjmin, double mjmax)
 {
     vector<PassedEvent> events;
     double transferfactor,transferfactorErr, bNorm,bNormErr;
@@ -392,11 +443,11 @@ void Plots::PlotAll()
 
     RootIO::ReadEvents("Normtest.root", events);
     Plots::PlotPTMiss(events);
-    Analysis::FitCherbyshev(events, bNorm,bNormErr, params);
-    Analysis::CalcTransferFactor(events, bNorm,bNormErr, NCRi, transferfactor,transferfactorErr);
+    Analysis::FitCherbyshev(events, bNorm,bNormErr, params, mjmin, mjmax);
+    Analysis::CalcTransferFactor(events, bNorm,bNormErr, NCRi, transferfactor,transferfactorErr, mjmin, mjmax);
     
-    Plots::PlotMJ1(events, params);
-    Plots::PlotSignalRegion(events, NCRi, transferfactor,transferfactorErr);
+    Plots::PlotMJ1(events, params, mjmin, mjmax);
+    Plots::PlotSignalRegion(events, NCRi, transferfactor,transferfactorErr, mjmin, mjmax);
     Plots::PlotPTMiss(events);
-    Plots::PlotPhotonLeptonValidation(events);
+    //Plots::PlotPhotonLeptonValidation(events, mjmin, mjmax);
 }

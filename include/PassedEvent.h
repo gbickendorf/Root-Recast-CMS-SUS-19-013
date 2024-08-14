@@ -2,6 +2,7 @@
 #include <TROOT.h>
 #include "TObject.h"
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class PassedEvent : public TObject {
@@ -13,6 +14,8 @@ class PassedEvent : public TObject {
     Double_t mj1;
     Double_t mj2;
     Double_t ptmiss;
+    vector<double> jAK8PT;  
+    vector<double> jAK8AngSepBTag;
     Int_t status;//0:Z 1:W 2:tt 3:t 
     void Print();
     //ClassDef(PassedEvent,1)

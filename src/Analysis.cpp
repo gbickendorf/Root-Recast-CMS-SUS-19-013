@@ -1,5 +1,8 @@
 #include "Analysis.h"
 
+double Analysis::SRmjmin = 0;
+double Analysis::SRmjmax = 0;
+
 double Analysis::sq(double x)
 {
   return x * x;
@@ -1432,7 +1435,7 @@ void Analysis::AnalyseEvents2(ExRootTreeReader *treeReader, vector<PassedEvent> 
   }
 }
 
-void Analysis::SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events, double intLumi)
+void Analysis::SampleFromEventsNewPassedEventDefHadronicBaseline(vector<PassedEvent> &events, double intLumi)
 {
   double loX[] = {4.248, 1.375, 4.584, 1.964};
   double nloX[] = {5.410, 1.773, 6.741, 5.218};
@@ -1441,13 +1444,69 @@ void Analysis::SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events, do
   double NT[] = {147143876, 407148516, 84600510, 0};
   vector<vector<PassedEvent>> rawEvents(3);
   vector<PassedEvent> importedEvents;
-  RootIO::ReadEventsNewPassedEventDef("/home/gerrit/Documents/PHD/SUSY4Cathode/ClusterTestRun/root-on-vscode/AllCuts.root", importedEvents, 0);
+  //RootIO::ReadEventsNewPassedEventDef("/home/gerrit/Documents/PHD/SUSY4Cathode/ClusterTestRun/root-on-vscode/AllCuts.root", importedEvents, 0);
+  RootIO::ReadEventsNewPassedEventDef("/home/gerrit/Documents/PHD/SUSY4Cathode/ClusterTestRun/root-on-vscode/HadronicBaseline.root", importedEvents, 0);
 
   for (size_t i = 0; i < importedEvents.size(); i++)
   {
     importedEvents[i].status--;
     rawEvents[importedEvents[i].status].push_back(importedEvents[i]);
   }
+  for (size_t i = 0; i < rawEvents.size(); i++)
+  {
+    cout << i << " " << rawEvents[i].size()<< endl;
+    /* code */
+  }
+  /*
+  
+14556
+0 8915
+1 3785
+2 1856
+Done Reading
+Weight: 0.46997  Nexpected: 1073.41  Navail: 8915
+Weight: 0.485507  Nexpected: 683.108  Navail: 3785
+Weight: 0.406745  Nexpected: 476.706  Navail: 1856
+Total events : 6833*/
+  cout << "Done Reading"<< endl;
+  random_device rd;
+  mt19937_64 gen(1); // 0
+  uniform_real_distribution<double> dist(0.0, 1.0);
+  for (size_t i = 0; i < 3; i++)
+  {
+    double Nexpected = nloX[i] / loX[i] * intLumi* X[i] * ST[i] / NT[i];
+    cout << "Weight: " << Nexpected / ST[i] << "  Nexpected: " << Nexpected << "  Navail: " << rawEvents[i].size() << endl;
+    if (Nexpected / ST[i] > 1)
+      cout << "Not enough Events" << endl;
+    for (size_t iEvent = 0; iEvent < rawEvents[i].size(); iEvent++)
+    {
+      if (dist(gen) < Nexpected / ST[i])
+      {
+        events.push_back(rawEvents[i][iEvent]);
+      }
+    }
+  }
+  cout << "Total events : " << events.size() << endl;
+}
+
+void Analysis::SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events, double intLumi)
+{
+  double loX[] = {4.248, 1.375, 4.584, 1.964};
+  double nloX[] = {5.410, 1.773, 6.741, 5.218};
+  double X[] = {181.0, 511.0, 78.0, 2344.0};
+  double ST[] = {2284, 1407, 1172, 10};
+  double NT[] = {147143876, 407148516, 84600510, 0};
+  //double NT[] = {131756281, 364570893, 75753397, 0};
+  vector<vector<PassedEvent>> rawEvents(3);
+  vector<PassedEvent> importedEvents;
+  RootIO::ReadEventsNewPassedEventDef("/home/gerrit/Documents/PHD/SUSY4Cathode/ClusterTestRun/root-on-vscode/AllCuts.root", importedEvents, 0);
+
+
+  for (size_t i = 0; i < importedEvents.size(); i++)
+  {
+    importedEvents[i].status--;
+    rawEvents[importedEvents[i].status].push_back(importedEvents[i]);
+  } 
 
   cout << "Done Reading"<< endl;
   random_device rd;
@@ -1469,6 +1528,7 @@ void Analysis::SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events, do
   }
   cout << "Total events : " << events.size() << endl;
 }
+
 void Analysis::SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events)
 {
   Analysis::SampleFromEventsNewPassedEventDef(events, 300.0e3);
@@ -1528,7 +1588,7 @@ double Analysis::TheoryXSectionLower(double m_Gluino)
 TF1 *Analysis::fitFunc;
 double Analysis::excludeSignalRegion(Double_t *x, Double_t *par)
 {
-  if (x[0] > 70 && x[0] < 100)
+  if (x[0] > Analysis::SRmjmin && x[0] < Analysis::SRmjmax)
   {
     TF1::RejectedPoint();
     return 0;
@@ -1537,17 +1597,19 @@ double Analysis::excludeSignalRegion(Double_t *x, Double_t *par)
   return fitFunc->Eval(x[0]);
 }
 
-void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &bNormErr, vector<double> &params)
+void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &bNormErr, vector<double> &params, double mjmin, double mjmax)
 {
+  Analysis::SRmjmin = mjmin;
+  Analysis::SRmjmax = mjmax;
   double sysError = 0.0;
   double statError = 0.0;
   TCanvas *c1 = new TCanvas("c1FitCherbyshev", "c1",200,180);
   c1->cd();
-  TH1F *h1 = new TH1F("h1", "", 20, 40.0, 140.0);
+  TH1F *h1 = new TH1F("h1", "", 20, mjmin-30, mjmax+40);
 
   for (size_t i = 0; i < events.size(); i++)
   {
-    if (events[i].mj2 < 70.0 || events[i].mj2 > 100.0 || events[i].status >= 10)
+    if (events[i].mj2 < mjmin || events[i].mj2 > mjmax || events[i].status >= 10)
       continue;
     h1->Fill(events[i].mj1);
   }
@@ -1556,7 +1618,7 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
   {
     string polyName = "chebyshev" + to_string(n);
     fitFunc = (TF1 *)gROOT->GetFunction(polyName.c_str());
-    TF1 *backGroundFit = new TF1(("Fit" + polyName).c_str(), excludeSignalRegion, 40, 140, fitFunc->GetNpar());
+    TF1 *backGroundFit = new TF1(("Fit" + polyName).c_str(), excludeSignalRegion, mjmin-30, mjmax+40, fitFunc->GetNpar());
     for (size_t iPar = 0; iPar < fitFunc->GetNpar(); iPar++)
     {
       backGroundFit->SetParameter(iPar, 1.0);
@@ -1565,11 +1627,11 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
     cout << "++++++++++++++" << endl;
     cout << polyName << endl;
     h1->Fit(backGroundFit, "IQ");
-    yield.push_back(fitFunc->Integral(70, 100) / 5);
+    yield.push_back(fitFunc->Integral(mjmin, mjmax) / 5);
     if (n == 1)
     {
       h1->Draw("E");
-      h1->GetYaxis()->SetRangeUser(0, 150);
+      h1->GetYaxis()->SetRangeUser(0, 300);
       params.push_back(backGroundFit->GetParameter(0));
       params.push_back(backGroundFit->GetParameter(1));
       params.push_back(backGroundFit->GetParError(0));
@@ -1577,15 +1639,15 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
       c1->SaveAs("Plots/Ch1.pdf");
       TH1F *pseudoyield = new TH1F("PseudoExperiments", "Pseudoexperiments BG normalisation", 100, yield[0] - 100, yield[0] + 100);
       int nPseudo = 10000;
-      TF1 *backgroundModel = new TF1("backgroundmodel", "[1]*x+[0]", 40.0, 140.0);
+      TF1 *backgroundModel = new TF1("backgroundmodel", "[1]*x+[0]", mjmin-30, mjmax+40);
       backgroundModel->SetParameter(0, params[0]);
       backgroundModel->SetParameter(1, params[1]);
       for (int i = 0; i < nPseudo; i++)
       {
-        TH1F *pseudo = new TH1F("pseudo1", "", 20, 40.0, 140.0);
+        TH1F *pseudo = new TH1F("pseudo1", "", 20,mjmin-30, mjmax+40);
         pseudo->FillRandom("backgroundmodel", h1->Integral());
         pseudo->Fit(backGroundFit, "IQ");
-        pseudoyield->Fill(fitFunc->Integral(70, 100) / 5);
+        pseudoyield->Fill(fitFunc->Integral(mjmin, mjmax) / 5);
         delete pseudo;
       }
       TFitResultPtr fitptr=pseudoyield->Fit("gaus", "IQS");
@@ -1610,7 +1672,7 @@ void Analysis::FitCherbyshev(vector<PassedEvent> events, double &bNorm, double &
   cout << "B_Norm " << bNorm << "\nStat : " << statError << "\nSys : " << sysError << "\nTotal : " << bNormErr << endl;
 }
 
-void Analysis::CalcTransferFactor(vector<PassedEvent> events, double bNorm, double bNormErr, vector<double> &NCRi, double &transferFactor, double &transferFactorErr)
+void Analysis::CalcTransferFactor(vector<PassedEvent> events, double bNorm, double bNormErr, vector<double> &NCRi, double &transferFactor, double &transferFactorErr, double mjmin, double mjmax)
 {
   TCanvas *c1 = new TCanvas("c1Trans", "c1");
   c1->cd();
@@ -1621,8 +1683,8 @@ void Analysis::CalcTransferFactor(vector<PassedEvent> events, double bNorm, doub
     PassedEvent event = events[i];
     if (event.status >= 10)
       continue;
-    if (event.mj1 < 70 || event.mj1 > 100)
-      if (event.mj2 < 70 || event.mj2 > 100)
+    if (event.mj1 < mjmin || event.mj1 > mjmax)
+      if (event.mj2 < mjmin || event.mj2 > mjmax)
         histCR->Fill(event.ptmiss);
   }
   cout << histCR->GetBinContent(1) << endl;
@@ -1640,11 +1702,11 @@ void Analysis::CalcTransferFactor(vector<PassedEvent> events, double bNorm, doub
   cout << "\n\n++++++++++++++++++++++++++ \n TransferFactor: "<< transferFactor << "  +-  " << transferFactorErr<<endl;
 }
 
-void Analysis::GetEventsInSignalRegion(vector<PassedEvent> events, vector<PassedEvent> &signalevents)
+void Analysis::GetEventsInSignalRegion(vector<PassedEvent> events, vector<PassedEvent> &signalevents, double mjmin, double mjmax)
 {
   for (int i = 0; i < events.size(); i++)
   {
-    if (events[i].status < 10 && events[i].mj1 > 70 && events[i].mj1 < 100 && events[i].mj2 > 70 && events[i].mj2 < 100)
+    if (events[i].status < 10 && events[i].mj1 > mjmin && events[i].mj1 < mjmax && events[i].mj2 > mjmin && events[i].mj2 < mjmax)
       signalevents.push_back(events[i]);
   }
 }

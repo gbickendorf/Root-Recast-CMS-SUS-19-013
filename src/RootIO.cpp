@@ -39,6 +39,8 @@ void RootIO::ReadEventsNewPassedEventDef(const char * filename,vector<PassedEven
   TTreeReaderValue<double> MET(myReader, "MET");
   TTreeReaderValue<double> Mj1(myReader, "Mj1");
   TTreeReaderValue<double> Mj2(myReader, "Mj2");
+  TTreeReaderValue<vector<double>> jAK8PT(myReader, "jAK8PT");
+  TTreeReaderValue<vector<double>> jAK8AngSepBTag(myReader, "jAK8AngSepBTag");
   int i = 0;
   while (myReader.Next())
   {
@@ -48,6 +50,15 @@ void RootIO::ReadEventsNewPassedEventDef(const char * filename,vector<PassedEven
     event.ptmiss = *MET;
     event.mj1 = *Mj1;
     event.mj2 = *Mj2;
+    for (size_t i = 0; i < (*jAK8PT).size(); i++)
+    {
+      event.jAK8PT.push_back((*jAK8PT)[i]);
+    }
+    for (size_t i = 0; i < (*jAK8AngSepBTag).size(); i++)
+    {
+      event.jAK8AngSepBTag.push_back((*jAK8AngSepBTag)[i]);
+    }
+
 
     events.push_back(event);
     // break;

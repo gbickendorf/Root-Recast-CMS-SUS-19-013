@@ -10,9 +10,21 @@
 Analysis.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Analysis.h
 
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/PassedEvent.cpp
+PassedEvent.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/PassedEvent.h
+
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Plots.cpp
 Plots.h
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Plots.h
+
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RootIO.cpp
+RootIO.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/RootIO.h
+
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Stats.cpp
+Stats.h
+/home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/Stats.h
 
 /home/gerrit/Documents/Projects/Root-Recast-CMS-SUS-19-013/src/main.cpp
 PassedEvent.h
@@ -112,6 +124,8 @@ TROOT.h
 TObject.h
 include/TObject.h
 iostream
+-
+vector
 -
 
 include/Plots.h

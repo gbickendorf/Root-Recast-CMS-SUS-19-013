@@ -97,7 +97,7 @@
 				},
 				{
 					"backtrace" : 4,
-					"fragment" : "-I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_3_2/ExRootAnalysis"
+					"fragment" : "-I/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_4_2/ExRootAnalysis"
 				},
 				{
 					"backtrace" : 4,
@@ -285,7 +285,7 @@
 				"role" : "libraries"
 			},
 			{
-				"fragment" : "-L/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_3_2/ExRootAnalysis",
+				"fragment" : "-L/home/gerrit/Documents/PHD/Tools/MG5_aMC_v3_4_2/ExRootAnalysis",
 				"role" : "libraries"
 			},
 			{

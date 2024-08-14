@@ -6,6 +6,8 @@ PassedEvent::PassedEvent(const PassedEvent &evnt)
     mj2=evnt.mj2;
     ptmiss=evnt.ptmiss;
     status=evnt.status;
+    jAK8PT=evnt.jAK8PT;
+    jAK8AngSepBTag=evnt.jAK8AngSepBTag;
 }
 
 PassedEvent::PassedEvent()

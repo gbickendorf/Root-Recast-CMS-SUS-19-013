@@ -1,0 +1,18 @@
+TFile *fin = TFile::Open("StatsOutput300.root", "READ");
+vector<vector<double>> limits;
+vector<double> m_Go;
+vector<vector<double>> *plimits;
+vector<double> *pm_Go;
+fin->GetObject("limits", plimits);
+fin->GetObject("m_Go", pm_Go);
+m_Go=*pm_Go;
+limits=*plimits;
+for(size_t i = 0; i < m_Go.size(); i++){
+  cout << m_Go[i] << ",";
+  cout << limits[i][0] << ",";
+  cout << limits[i][1] << ",";
+  cout << limits[i][2] << ",";
+  cout << limits[i][3] << ",";
+  cout << limits[i][4] << ",";
+  cout << limits[i][5] << endl;
+}

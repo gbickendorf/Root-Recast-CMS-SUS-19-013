@@ -37,6 +37,8 @@ class Analysis {
         static double sq(double x);
         static double excludeSignalRegion(Double_t *x, Double_t *par);
         static TF1 *fitFunc;
+        static double SRmjmin;
+        static double SRmjmax;
     public:
         static double AnalyseEvents(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents, int status);
         static double AnalyseEventsNew(ExRootTreeReader *treeReader, vector<PassedEvent> &events , int MinNumEvents, int status);
@@ -47,9 +49,10 @@ class Analysis {
         static void SampleFromEvents(vector<PassedEvent> &events, double intLumi);
         static void SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events);
         static void SampleFromEventsNewPassedEventDef(vector<PassedEvent> &events, double intLumi);
-        static void FitCherbyshev(vector<PassedEvent> events ,double &bNorm, double &bNormErr,vector<double> &params);
-        static void CalcTransferFactor(vector<PassedEvent> events,double bNorm,double bNormErr, vector<double> &NCRi, double &transferFactor, double &transferFactorErr);
-        static void GetEventsInSignalRegion(vector<PassedEvent> events,vector<PassedEvent> &signalevents);
+        static void SampleFromEventsNewPassedEventDefHadronicBaseline(vector<PassedEvent> &events, double intLumi);
+        static void FitCherbyshev(vector<PassedEvent> events ,double &bNorm, double &bNormErr,vector<double> &params, double mjmin, double mjmax);
+        static void CalcTransferFactor(vector<PassedEvent> events,double bNorm,double bNormErr, vector<double> &NCRi, double &transferFactor, double &transferFactorErr, double mjmin, double mjmax);
+        static void GetEventsInSignalRegion(vector<PassedEvent> events,vector<PassedEvent> &signalevents, double mjmin, double mjmax);
         static void GetSRBinContent(vector<PassedEvent> &signalevents,vector<double> &binContent);
         static double TheoryXSection(double m_Gluino);
         static double TheoryXSectionUpper(double m_Gluino);
