@@ -17,10 +17,6 @@
 #include <TLegend.h>
 #include <vector>
 
-//#include <RooHist.h>
-//#include <RooDataSet.h>
-//#include <RooPlot.h>
-
 using namespace std;
 
 void ReadFilenames(const char *filename, vector<string> &FilePaths)
@@ -36,25 +32,7 @@ void ReadFilenames(const char *filename, vector<string> &FilePaths)
     file.close();
   }
 }
-void test()
-{
-  vector<string> paths;
-  RootIO::GetRootFilePath("/media/gerrit/Files/RootFiles/A/ROOTFILES.txt", paths, -1);
-  vector<PassedEvent> events;
-  int total = 0;
-  int inFile;
-  for (size_t i = 0; i < paths.size(); i++)
-  {
-    RootIO::ReadEvents(paths[i].c_str(), events, 0, inFile);
-    total += inFile;
-  }
-  cout << total << endl;
-  RootIO::SaveEvents("/media/gerrit/Files/RootFiles/A/root.root", events, 1);
-  events.clear();
-  RootIO::ReadEvents("/media/gerrit/Files/RootFiles/A/root.root", events, 1);
-  events.clear();
-  RootIO::ReadEvents("RootFiles/A-Total.root", events, 1);
-}
+
 
 void ReadGluino(const char *filename, double m_Go, const char *outFilename)
 {
@@ -169,68 +147,6 @@ void CalcSignif(const char *filenameGo, double m_Go)
   
   return;
 
-}
-
-void OldMain(int argc, char **argv)
-{
-  vector<string> filenames = {"Run02.root", "Run03.root", "Run04.root", "Run05.root", "Run06.root", "Run07.root", "Run08.root", "Run09.root", "Run10.root", "Run11.root", "Run12.root", "Run13.root", "Run14.root"};
-  vector<double> m_Go = {1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500};
-  for (size_t n = 6; n < 13; n++)
-  {
-    cout << "+++++++" << filenames[n] << "++++++++++++" << endl;
-    ostringstream signalOutFile;
-    signalOutFile << "RootFiles/Signal" << m_Go[n] << "GeV.root";
-    ReadGluino((string("/media/gerrit/Files/RootFiles/Gluino/Jump/") + filenames[n]).c_str(), m_Go[n], signalOutFile.str().c_str());
-    return;
-  }
-
-  vector<PassedEvent> events, SREvents;
-  Analysis::SampleFromEventsNewPassedEventDef(events);
-  Plots::PlotPTShape(events);
-  Plots::PlotPTMiss(events);
-
-  vector<double> params;
-  double bNorm, transferFactor, bNormErr, transferFactorErr;
-  vector<double> NCRi, SRBinContent;
-  Analysis::FitCherbyshev(events, bNorm, bNormErr, params);
-  Analysis::CalcTransferFactor(events, bNorm, bNormErr, NCRi, transferFactor, transferFactorErr);
-  Plots::PlotMJ1(events, params);
-  Plots::PlotSignalRegion(events, NCRi, transferFactor, transferFactorErr);
-  Plots::PlotPhotonLeptonValidation(events);
-  FILE *pFile = fopen("BackgroundEstimate.csv", "w");
-  fprintf(pFile, "BG,stat,sys\n");
-
-  TVectorD vNCRi(6);
-  TVectorD vSRBin(6);
-  TVectorD vtransferFactor(2);
-
-  vtransferFactor[0] = transferFactor;
-  vtransferFactor[1] = transferFactorErr;
-
-  for (size_t i = 0; i < NCRi.size(); i++)
-  {
-    vNCRi[i] = NCRi[i];
-    fprintf(pFile, "%E,%E,%E\n", NCRi[i] * transferFactor, sqrt(NCRi[i]) * transferFactor, NCRi[i] * transferFactorErr);
-    /* code */
-  }
-  fclose(pFile);
-
-  Analysis::GetEventsInSignalRegion(events, SREvents);
-  Analysis::GetSRBinContent(SREvents, SRBinContent);
-  pFile = fopen("Data.csv", "w");
-  fprintf(pFile, "Data,stat\n");
-  for (size_t i = 0; i < SRBinContent.size(); i++)
-  {
-    vSRBin[i] = SRBinContent[i];
-    fprintf(pFile, "%E,%E\n", SRBinContent[i], sqrt(SRBinContent[i]));
-    /* code */
-  }
-  fclose(pFile);
-  TFile f("RootFiles/FinalSamples.root", "RECREATE");
-  vNCRi.Write("NCR_i");
-  vSRBin.Write("DataBins");
-  vtransferFactor.Write("TransferFac");
-  f.Close();
 }
 
 void RunSignif()
