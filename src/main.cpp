@@ -165,8 +165,6 @@ void RunSignif()
 
 int main(int argc, char **argv)
 {
-  RunSignif();
-  return 0;
 
   vector<string> filenames = {"EventsRun1.root", "EventsRun2.root", "EventsRun3.root", "EventsRun4.root", "EventsRun5.root", "EventsRun6.root", "EventsRun7.root", "EventsRun8.root"};
   vector<double> m_n2 = {1900, 185, 1800, 1600, 1250, 1000, 500, 250};
